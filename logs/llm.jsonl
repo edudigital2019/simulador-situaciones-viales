@@ -1,0 +1,13 @@
+{"evento": "ok", "proveedor": "gemini", "modelo": "gemini-3.8-flash", "intento": 1, "latencia_ms": 18115, "tokens_entrada": 406, "tokens_salida": 66, "fin": "stop"}
+{"evento": "reintento", "proveedor": "gemini", "intento": 1, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 0.9}
+{"evento": "reintento", "proveedor": "gemini", "intento": 2, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 1.09}
+{"evento": "agotado", "proveedor": "gemini", "intento": 3, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 3.58}
+{"evento": "ok", "proveedor": "groq", "modelo": "openai/gpt-oss-20b", "intento": 1, "latencia_ms": 949, "tokens_entrada": 1168, "tokens_salida": 475, "fin": "stop"}
+{"evento": "reintento", "proveedor": "gemini", "intento": 1, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 0.73}
+{"evento": "reintento", "proveedor": "gemini", "intento": 2, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 1.51}
+{"evento": "agotado", "proveedor": "gemini", "intento": 3, "tipo": "InternalServerError", "estado_http": 503, "espera_s": 2.01}
+{"evento": "ok", "proveedor": "groq", "modelo": "openai/gpt-oss-20b", "intento": 1, "latencia_ms": 1137, "tokens_entrada": 3609, "tokens_salida": 471, "fin": "stop"}
+{"evento": "reintento", "proveedor": "gemini", "intento": 1, "tipo": "InternalServerError", "estado_http": 503, "espera_s": 0.55}
+{"evento": "reintento", "proveedor": "gemini", "intento": 2, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 1.95}
+{"evento": "agotado", "proveedor": "gemini", "intento": 3, "tipo": "APITimeoutError", "estado_http": null, "espera_s": 2.88}
+{"evento": "ok", "proveedor": "groq", "modelo": "openai/gpt-oss-20b", "intento": 1, "latencia_ms": 1344, "tokens_entrada": 3609, "tokens_salida": 488, "fin": "stop"}
