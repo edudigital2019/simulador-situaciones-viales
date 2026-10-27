@@ -1,36 +1,42 @@
-# 04 · Inventario de fuentes
+# 04 · Inventario de Fuentes de la Base de Conocimiento
+**Caso N.° 08 · Simulador Educativo de Situaciones Viales (Vía Segura) · UNIANDES**  
+**Fecha de Verificación:** Octubre 2026
 
-> Descargar los textos a `data/raw/` y completar la vigencia con el documento oficial.
+---
 
-| # | Documento | Origen oficial | URL | Publicación / vigencia | Formato | Uso |
+## 1. Inventario Oficial de Fuentes Normativas
+
+La base de conocimiento de «Vía Segura» se fundamenta exclusivamente en instrumentos jurídicos y técnicos oficiales vigentes de la República del Ecuador:
+
+| # | Documento | Origen Oficial | URL / Repositorio | Fecha de Publicación / Vigencia | Formato | Rol en el Sistema |
 |---|---|---|---|---|---|---|
-| F1 | COIP, arts. 383–392 (tránsito) y reformas | Asamblea Nacional / Registro Oficial | _completar_ | RO Supl. 180, 10-feb-2014; reformas (incl. 2021): **verificar** | PDF | Contravenciones por clase, multas, puntos |
-| F2 | LOTTTSV | Asamblea Nacional / ANT |   | RO Supl. 398, 7-ago-2008 + reformas vigentes | PDF | Obligaciones, definiciones, licencias |
-| F3 | Reglamento General de aplicación de la LOTTTSV | ANT | https://www.ant.gob.ec | _completar_ | PDF | Procedimientos, límites, señalización |
-| F4 | Acuerdo Ministerial MDT-2025-195 (SBU 2026 = USD 482) | Ministerio del Trabajo | https://www.trabajo.gob.ec | 15-dic-2025; rige desde 1-ene-2026 | PDF | Valor en `config/settings.yaml` |
-| F5 | Material de educación vial | ANT | https://www.ant.gob.ec | _completar_ | PDF/web | Pasos ante un accidente, buenas prácticas |
-| F6 | Tabla estructurada de contravenciones (la construye el equipo) | Derivada de F1 | `data/tabla_contravenciones.csv` | Versionada en Git | CSV | Fuente de verdad para escenarios y sanciones |
+| **F-01** | **Código Orgánico Integral Penal (COIP)** — Capítulo Octavo: Infracciones de Tránsito, Sección Tercera: Contravenciones (Arts. 383 a 392). | Asamblea Nacional del Ecuador / Registro Oficial | [https://www.ant.gob.ec](https://www.ant.gob.ec) / [Asamblea Nacional](https://www.asambleanacional.gob.ec) | Registro Oficial Suplemento 180 de 10-feb-2014, con reformas consolidadas a 2026. | Ley Oficial / PDF y `data/raw/contravenciones_lotttsv.json` | Tipificación canónica obligatoria de contravenciones de 1.ª a 7.ª clase, porcentaje de SBU y reducción de puntos. |
+| **F-02** | **Ley Orgánica de Transporte Terrestre, Tránsito y Seguridad Vial (LOTTTSV)** y su Ley Orgánica Reformatoria. | Asamblea Nacional del Ecuador | [https://www.ant.gob.ec](https://www.ant.gob.ec) | Registro Oficial Suplemento 398 de 07-ago-2008; reformas R.O. Suplemento 512 de 10-ago-2021. | Ley Oficial / PDF | Deberes y derechos de conductores, peatones y pasajeros; jerarquía de señales y títulos habilitantes. |
+| **F-03** | **Reglamento General para la Aplicación de la LOTTTSV** | Presidencia de la República / ANT | [https://www.ant.gob.ec](https://www.ant.gob.ec) | Registro Oficial Suplemento 731 de 25-jun-2012 y reformas vigentes. | Decreto Ejecutivo / PDF | Normas operativas de circulación, pasos cebra, señalética manual de agentes y rangos moderados de velocidad. |
+| **F-04** | **Acuerdo Ministerial del Salario Básico Unificado (SBU)** | Ministerio del Trabajo del Ecuador | [https://www.trabajo.gob.ec](https://www.trabajo.gob.ec) | Acuerdo Ministerial anual (Valor de referencia base: $460.00 USD). | Acuerdo Ministerial / JSON (`config/parametros.json`) | Parámetro dinámico para el cálculo determinista de las sanciones económicas en dólares. |
+| **F-05** | **Manual de Educación Vial y Señalización de Tránsito** | Agencia Nacional de Tránsito (ANT) | [https://www.ant.gob.ec](https://www.ant.gob.ec) | Resoluciones y manuales vigentes (edición 2024–2026). | Guía Técnica / PDF | Corpus pedagógico para la redacción de opciones distractivas y explicaciones formativas. |
 
-## Vigencia
-- Cada fuente lleva `fecha_vigencia` y `fecha_consulta`; se revisa antes de cada despliegue.
-- El SBU se actualiza cada año en configuración; **no** vive en el código ni en el prompt.
-- Pendiente: confirmar con texto oficial si hubo reformas posteriores a 2021 y qué clases conservan reducción de puntos.
+---
 
-## Estrategia de fragmentación
-- **Un fragmento por artículo**, y por numeral cuando el artículo es muy largo (COIP 386–392), porque la cita exigida es por artículo.
-- Metadatos: `documento`, `articulo`, `numeral`, `clase`, `fecha_vigencia`, `fuente_url`.
-- Embeddings multilingües locales; ChromaDB persistente en `data/chroma/`; `scripts/ingesta.py` reproducible.
-- Recuperación: primero **por clave** (artículo/numeral de la tabla); búsqueda semántica solo para contexto adicional.
+## 2. Estrategia de Estructuración y Fragmentación (Semana 1 a Semana 3)
 
-## Esquema de la tabla (`data/tabla_contravenciones.csv`)
-`id, clase, articulo, numeral, descripcion, porcentaje_sbu, puntos_texto_coip, puntos_aplicables, pena_adicional, perfil_aplica, solo_multa_ciclista_peaton, documento_fuente, estado_verificacion` (tabla completa en `data/tabla_contravenciones.csv`, ver `07-tabla-coip.md`)
+### Fase Inicial (Semanas 1 y 2 · Tabla Canónica Estructurada)
+Para el MVP y la integración con el modelo generativo, la fuente primaria opera como una **base estructurada determinista** (`data/raw/contravenciones_lotttsv.json`). Cada infracción contiene:
+- `id_contravencion`: Código único inmutable (ej. `CONT-COIP-ART389-1`).
+- `clase`: Clase de contravención (Primera a Séptima clase).
+- `articulo` y `norma`: Cita legal precisa.
+- `descripcion_infraccion`: Tipificación textual de la conducta.
+- `porcentaje_sbu`: Porcentaje matemático exacto para cómputo determinista.
+- `puntos_reducidos`: Puntos sancionados de la licencia de conducir.
+- `perfiles_aplicables`: Lista de perfiles autorizados (`conductor_particular`, `conductor_profesional`, `peaton`).
 
-Filas de ejemplo
-| id | clase | descripción | % SBU | puntos | artículo |
-|---|---|---|---|---|---|
-| C-386-01 | 1ª | Conducir sin haber obtenido licencia | 100 | 0 (el propio art. 386 excluye la reducción en el numeral 1; +3 días de prisión) | COIP 386.1 |
-| C-387-02 | 2ª | Conducir con licencia caducada, anulada, revocada o suspendida | 50 | 9 | COIP 387.2 |
-| C-391-05 | 6ª | Estacionar en lugar no permitido | 10 | 0 (según reforma 2021) | COIP 391.5 |
-| C-392-06 | 7ª | No usar cinturón de seguridad | 5 | 0 (según reforma 2021) | COIP 392.6 |
-
-Cálculo: `multa = porcentaje_sbu / 100 × SBU`. Con SBU 482: 10 % = USD 48,20.
+### Fase de Inteligencia Avanzada (Semana 3 · Estrategia RAG por Artículo)
+En la semana 3, para la retroalimentación ampliada y consultas complejas, se aplicará una fragmentación guiada por la estructura legal:
+- **Unidad de Fragmentación (Chunk):** Por **artículo legal completo** (evitando cortes ciegos por caracteres que mutilen numerales o sanciones).
+- **Metadatos obligatorios por fragmento:**
+  - `documento`: Nombre de la norma (ej. `COIP`, `LOTTTSV`, `Reglamento LOTTTSV`).
+  - `articulo`: Número de artículo y numeral exacto.
+  - `clase`: Clasificación de la infracción si aplica.
+  - `fecha_vigencia`: Fecha de la última reforma aplicable al fragmento.
+  - `fuente_url`: Enlace oficial verificado para consulta ciudadana.
+- **Índice Vectorial:** Almacenado en disco mediante ChromaDB con embeddings semánticos para recuperación por similitud contextual ante consultas libres.
