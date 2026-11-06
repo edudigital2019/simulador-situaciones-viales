@@ -32,7 +32,7 @@ from app.services.agente import ejecutar_agente_consulta
 from app.services.generador import generar_escenario
 from app.services.limite_tasa import LimitadorTasa
 from app.services.llm import ClienteLLM, ErrorLLM
-from app.services.rag import recuperar
+from app.services.rag import cargar_indice, recuperar
 from app.tools.contravenciones import EscenarioInvalido, FueraDeDominio, cargar_tabla
 from app.tools.progreso import obtener_progreso, registrar_progreso
 from app.tools.evaluar_respuesta import evaluar_respuesta
@@ -124,7 +124,19 @@ def clave_sesion(request: Request) -> str:
 
 @app.get("/health")
 def health():
-    return {"estado": "ok"}
+    indice_cargado = cargar_indice.cache_info().currsize > 0
+    fragmentos = len(cargar_indice()) if indice_cargado else 0
+
+    return {
+        "status": "ok",
+        "indice_cargado": indice_cargado,
+        "fragmentos": fragmentos,
+        "modelo_configurado": bool(
+            os.getenv("GROQ_API_KEY")
+            or os.getenv("GEMINI_API_KEY")
+        ),
+        "version": os.getenv("APP_VERSION", "dev"),
+    }
 
 
 @app.get("/rag/buscar")
