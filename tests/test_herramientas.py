@@ -213,7 +213,10 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
                     id="call_mock_rag_1",
                     function=SimpleNamespace(
                         name="buscar_normativa_rag",
-                        arguments=json.dumps({"consulta": "Semáforo en rojo", "top_k": 5}),
+                        arguments=json.dumps({
+                            "consulta": "Me pasé un semáforo en rojo, ¿cuál es la sanción?",
+                            "top_k": 5,
+                        }),
                     ),
                 )
                 msg = SimpleNamespace(content=None, tool_calls=[tc])
@@ -243,7 +246,10 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
             return msg, "mock", "modelo-mock", 10, 1
 
     mock_llm = ClienteLLMMockToolCalling()
-    res = ejecutar_agente_consulta("Semáforo en rojo", cliente_llm=mock_llm)
+    res = ejecutar_agente_consulta(
+        "Me pasé un semáforo en rojo, ¿cuál es la sanción?",
+        cliente_llm=mock_llm,
+    )
     assert mock_llm.llamadas == 1
     assert "144.60 USD" in res["respuesta"]
     mensajes_traza = res["agente"]["mensajes"]

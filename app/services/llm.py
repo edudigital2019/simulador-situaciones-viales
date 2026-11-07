@@ -59,7 +59,6 @@ DEFINITIVOS = (
     openai.PermissionDeniedError,
     openai.NotFoundError,
     openai.BadRequestError,
-    openai.APIStatusError,
 )
 ESPERA_MAXIMA_S = 20
 
@@ -161,6 +160,15 @@ class ClienteLLM:
                 if intento == self.config.reintentos or espera > ESPERA_MAXIMA_S:
                     raise _FalloProveedor() from e
                 self.dormir(espera)
+            except openai.APIStatusError as e:
+                _registrar(
+                    evento="error_proveedor",
+                    proveedor=p.nombre,
+                    intento=intento,
+                    tipo=type(e).__name__,
+                    estado_http=getattr(e, "status_code", None),
+                )
+                raise _FalloProveedor() from e
         raise _FalloProveedor()
 
     def _con_respaldo(self, mensajes: list[dict], extra: dict):
