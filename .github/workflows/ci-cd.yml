@@ -1,0 +1,103 @@
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REGION: us-central1
+  REGISTRO: via-segura
+  SERVICIO: via-segura
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    env:
+      LLM_PRINCIPAL: simulado
+      LLM_RESPALDO: ""
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Revisar secretos
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependencias del backend
+        run: pip install -r requirements.txt
+
+      - name: Preparar modelo de embeddings
+        run: python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+
+      - name: Ejecutar pruebas
+        run: python -m pytest -q
+
+      - name: Evaluar el RAG
+        run: python eval/run_eval.py
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias del frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: Compilar frontend
+        working-directory: frontend
+        run: npm run build
+
+  despliegue:
+    runs-on: ubuntu-latest
+    needs: pruebas
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v6
+
+      - name: Autenticar en Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar Google Cloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configurar Artifact Registry
+        run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+      - name: Construir imagen
+        run: docker build -t $REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REGISTRO/via-segura:${{ github.sha }} .
+
+      - name: Publicar imagen
+        run: docker push $REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REGISTRO/via-segura:${{ github.sha }}
+
+      - name: Desplegar en Cloud Run
+        run: >-
+          gcloud run deploy $SERVICIO
+          --image $REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REGISTRO/via-segura:${{ github.sha }}
+          --project ${{ secrets.GCP_PROJECT_ID }}
+          --region $REGION
+          --platform managed
+          --allow-unauthenticated
+          --set-env-vars LLM_PRINCIPAL=gemini,LLM_RESPALDO=groq
+          --set-secrets GEMINI_API_KEY=gemini-api-key:latest,GROQ_API_KEY=groq-api-key:latest

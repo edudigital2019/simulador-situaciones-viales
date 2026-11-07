@@ -21,3 +21,18 @@ el frontend React compilado, el modelo de embeddings y el índice del RAG.
 | Registros de llamadas al modelo | No existe en nuestro proyecto |
 
 **Lo que aceptamos perder y por qué:** Aceptamos perder los escenarios temporales al reiniciar el contenedor porque corresponden a una demostración educativa y pueden generarse nuevamente. Los documentos normativos y el índice del RAG se incluyen en la imagen y están disponibles en cada arranque.
+
+## Integración y despliegue continuo
+
+El flujo `.github/workflows/ci-cd.yml` revisa secretos y ejecuta las pruebas, la evaluación del RAG y la compilación del frontend en cada push y pull request. Durante las pruebas utiliza el proveedor simulado, sin consumir claves ni cuota de los modelos reales.
+
+Al actualizar `master`, el despliegue en Cloud Run solo empieza si el job `pruebas` termina correctamente.
+
+El repositorio necesita estos secretos en GitHub:
+
+- `GCP_PROJECT_ID`: identificador del proyecto de Google Cloud.
+- `GCP_SA_KEY`: credenciales JSON de la cuenta de servicio usada por GitHub Actions.
+
+En Secret Manager deben existir `gemini-api-key` y `groq-api-key`, con acceso para la cuenta que ejecuta el servicio de Cloud Run.
+
+La imagen se publica en un repositorio Docker de Artifact Registry llamado `via-segura`, ubicado en `us-central1`.
