@@ -68,7 +68,7 @@ jobs:
   despliegue:
     runs-on: ubuntu-latest
     needs: pruebas
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && vars.HABILITAR_DESPLIEGUE == 'true'
 
     steps:
       - name: Descargar código

@@ -26,7 +26,7 @@ el frontend React compilado, el modelo de embeddings y el índice del RAG.
 
 El flujo `.github/workflows/ci-cd.yml` revisa secretos y ejecuta las pruebas, la evaluación del RAG y la compilación del frontend en cada push y pull request. Durante las pruebas utiliza el proveedor simulado, sin consumir claves ni cuota de los modelos reales.
 
-Al actualizar `master`, el despliegue en Cloud Run solo empieza si el job `pruebas` termina correctamente.
+Al actualizar `master`, el despliegue en Cloud Run solo empieza si el job `pruebas` termina correctamente y la variable `HABILITAR_DESPLIEGUE` del repositorio tiene el valor `true`. Mientras se preparan las credenciales y la infraestructura, el job queda omitido sin afectar la validación de CI.
 
 El repositorio necesita estos secretos en GitHub:
 
