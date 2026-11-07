@@ -18,8 +18,8 @@ RUTA_CHROMA_JSON = RAIZ / "chroma_db" / "normativa_collection.json"
 UMBRAL_DISTANCIA_COSENO = 0.45
 
 MENSAJE_ABSTENCION_RAG = (
-    "La normativa que tengo cargada (COIP, LOTTTSV y su Reglamento) no responde esta pregunta "
-    "o requiere verificación administrativa. Le recomiendo consultar directamente a la Agencia Nacional de Tránsito (ANT)."
+    "No tengo información sobre ese tema. "
+    "Solo puedo responder consultas relacionadas con normativa y situaciones viales."
 )
 
 MENSAJE_DERIVACION_DISPUTA = (

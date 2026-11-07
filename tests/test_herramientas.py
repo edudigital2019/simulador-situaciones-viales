@@ -280,7 +280,7 @@ def test_agente_no_acepta_respuesta_directa_sin_consultar_herramientas():
     )
 
     assert res["abstencion"] is True
-    assert "Agencia Nacional de Tránsito" in res["respuesta"]
+    assert "Solo puedo responder consultas relacionadas con normativa" in res["respuesta"]
     assert any(m.get("name") == "buscar_normativa_rag" for m in res["agente"]["mensajes"])
 
 
