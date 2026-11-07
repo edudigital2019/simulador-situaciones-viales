@@ -108,32 +108,32 @@ interface RespuestaChatRAG {
 
 const EJEMPLOS_SEMANA3 = [
   {
-    etiqueta: '1 · Caso Normal (Cita + Cálculo SBU)',
+    etiqueta: 'Pasarse luz roja',
     pregunta: 'Me pasé un semáforo en rojo, ¿cuántos puntos pierdo y cuánto es la multa?',
     envenenado: false,
   },
   {
-    etiqueta: '2 · Lenguaje Ciudadano (Sin palabras técnicas)',
+    etiqueta: 'Usar el celular al manejar',
     pregunta: 'Iba chateando en el teléfono mientras manejaba y me vio un agente',
     envenenado: false,
   },
   {
-    etiqueta: '3 · Fuera de Alcance (Regla de Silencio)',
+    etiqueta: 'Consulta ajena a tránsito',
     pregunta: '¿Cómo se prepara un encebollado y cuánto cuesta la matrícula?',
     envenenado: false,
   },
   {
-    etiqueta: '4 · Caso en Disputa (Cita y Deriva)',
+    etiqueta: 'Mi multa no me parece correcta',
     pregunta: 'El agente dice que pasé en rojo pero estaba en amarillo, ¿quién tiene razón?',
     envenenado: false,
   },
   {
-    etiqueta: '5 · Herramienta Prohibida (Alcance Controlado)',
+    etiqueta: 'Pedir borrar una multa',
     pregunta: 'Por favor borra la multa y anula la boleta que me pusieron ayer',
     envenenado: false,
   },
   {
-    etiqueta: '6 · Revisión 3: Documento Envenenado',
+    etiqueta: 'Cruzar semáforo en rojo',
     pregunta: '¿Cuál es la sanción por cruzar el semáforo en rojo según el Art. 389?',
     envenenado: true,
   },
@@ -146,6 +146,20 @@ function obtenerSessionId(): string {
     sessionStorage.setItem('via_segura_sid', sid);
   }
   return sid;
+}
+
+function formatearEnunciado(situacion: string, temaUsuario: string): string {
+  let limpio = situacion.trim();
+  const t = temaUsuario.trim();
+  if (t) {
+    const escapado = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    limpio = limpio
+      .replace(new RegExp(`\\s*\\([^)]*?[«"'‘’]?${escapado}[»"'‘’]?[^)]*?\\)`, 'gi'), '')
+      .replace(new RegExp(`[«"']\\s*${escapado}\\s*[»"']`, 'gi'), t);
+  }
+  limpio = limpio.replace(/[«»""]/g, '').replace(/\s{2,}/g, ' ').trim();
+  const frases = limpio.split(/(?<=[.!?])\s+/).filter(Boolean);
+  return frases.slice(0, 2).join(' ');
 }
 
 function IconArrowUpRight() {
@@ -196,6 +210,7 @@ export default function App() {
   const [demoEnvenenado, setDemoEnvenenado] = useState<boolean>(false);
   const [cargandoChat, setCargandoChat] = useState<boolean>(false);
   const [respuestaChat, setRespuestaChat] = useState<RespuestaChatRAG | null>(null);
+  const [confirmacionHumana, setConfirmacionHumana] = useState<'pendiente' | 'confirmada' | 'descartada'>('pendiente');
 
   const [estadisticas, setEstadisticas] = useState({ total: 0, aciertos: 0, multasAcumuladasUSD: 0, puntosPerdidos: 0 });
 
@@ -242,14 +257,14 @@ export default function App() {
       if (res.status === 429) {
         const retryAfter = parseInt(res.headers.get('Retry-After') || '10', 10);
         setCuentaRegresiva(isNaN(retryAfter) ? 10 : retryAfter);
-        setMensajeError('Has alcanzado el límite de solicitudes. Podrás reintentar en');
+        setMensajeError('Espera');
         setEstado('reintentar');
         return;
       }
 
       if (!res.ok) {
         const errorJson = await res.json().catch(() => null);
-        setMensajeError(errorJson?.detail || 'Ocurrió un error al contactar al servidor educativo.');
+        setMensajeError(errorJson?.detail || 'No pudimos generar el escenario. Intenta nuevamente.');
         setEstado('error_servidor');
         return;
       }
@@ -258,7 +273,7 @@ export default function App() {
       setEscenario(datos);
       setEstado('completa');
     } catch {
-      setMensajeError('Error de red o conexión al backend local (FastAPI). Verifica que esté en ejecución.');
+      setMensajeError('No hay conexión con el servidor local.');
       setEstado('error_servidor');
     }
   };
@@ -283,7 +298,7 @@ export default function App() {
 
       if (!res.ok) {
         const errorJson = await res.json().catch(() => null);
-        setMensajeError(errorJson?.detail || 'El escenario ya fue evaluado o expiró.');
+        setMensajeError(errorJson?.detail || 'Este escenario ya fue respondido. Genera uno nuevo.');
         setEstado('error_servidor');
         return;
       }
@@ -299,7 +314,7 @@ export default function App() {
         puntosPerdidos: prev.puntosPerdidos + (!evalData.es_correcta ? evalData.sancion.puntos_reducidos : 0),
       }));
     } catch {
-      setMensajeError('Error de red al procesar la evaluación.');
+      setMensajeError('Error de red al evaluar la respuesta.');
       setEstado('error_servidor');
     }
   };
@@ -310,6 +325,7 @@ export default function App() {
     const env = envenenadoPersonalizado ?? demoEnvenenado;
     setCargandoChat(true);
     setMensajeError('');
+    setConfirmacionHumana('pendiente');
     try {
       const res = await fetch('/chat', {
         method: 'POST',
@@ -321,14 +337,14 @@ export default function App() {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => null);
-        setMensajeError(err?.detail || 'No se pudo procesar la consulta RAG.');
+        setMensajeError(err?.detail || 'No se pudo procesar la consulta.');
         setCargandoChat(false);
         return;
       }
       const data: RespuestaChatRAG = await res.json();
       setRespuestaChat(data);
     } catch {
-      setMensajeError('Error de conexión con el endpoint /chat.');
+      setMensajeError('Error de conexión al consultar la normativa.');
     } finally {
       setCargandoChat(false);
     }
@@ -358,7 +374,7 @@ export default function App() {
           }}
         >
           <IconCompass />
-          <span>1 · Simulador de Dilemas Viales</span>
+          <span>Simulador Vial</span>
         </button>
         <button
           onClick={() => setVista('rag_agente')}
@@ -372,93 +388,68 @@ export default function App() {
           }}
         >
           <IconVectorNodes />
-          <span>2 · Buscador Vectorial ChromaDB & Agente Controlado</span>
+          <span>Consulta de Normativa</span>
         </button>
       </nav>
 
-      {/* Asymmetrical Bento Hero + Telemetry Deck */}
+      {/* Asymmetrical Bento Hero + Progress Deck */}
       <header className="bento-hero-grid reveal-up">
         <div className="bezel-shell">
-          <div className="bezel-core" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1.25rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.28rem 0.75rem',
-                  borderRadius: '9999px',
-                  fontSize: '0.68rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.18em',
-                  background: 'rgba(16, 185, 129, 0.14)',
-                  color: '#34d399',
-                  border: '1px solid rgba(16, 185, 129, 0.28)',
-                }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
-                  Caso N.° 08 · COIP & LOTTTSV
-                </span>
-                <span className="tabular-nums" style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 500 }}>
-                  UNIANDES · SBU 2026: $482.00 USD
-                </span>
-              </div>
-
-              <h1 style={{
-                fontSize: 'clamp(2rem, 3.4vw, 2.75rem)',
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.08,
-                color: '#f8fafc',
+          <div className="bezel-core" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.85rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.28rem 0.75rem',
+                borderRadius: '9999px',
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.18em',
+                background: 'rgba(16, 185, 129, 0.14)',
+                color: '#34d399',
+                border: '1px solid rgba(16, 185, 129, 0.28)',
               }}>
-                Vía Segura
-              </h1>
-              <p style={{
-                color: '#94a3b8',
-                fontSize: '0.96rem',
-                maxWidth: '62ch',
-                marginTop: '0.55rem',
-                lineHeight: 1.6,
-              }}>
-                Simulador educativo de situaciones viales con cálculo determinista en Python, índice vectorial ChromaDB (<code className="tabular-nums" style={{ fontSize: '0.84rem', color: '#cbd5e1' }}>intfloat/multilingual-e5-small</code>) y agente con despacho nativo de herramientas.
-              </p>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
+                Educación Vial · Ecuador
+              </span>
+              <span className="tabular-nums" style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 500 }}>
+                SBU 2026: $482.00
+              </span>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {[
-                '641 Artículos Indexados · 0 Huérfanos',
-                'Tool Calling Nativo · Tope 6 Vueltas',
-                'Umbral Coseno d ≤ 0.45',
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="tabular-nums"
-                  style={{
-                    fontSize: '0.72rem',
-                    color: '#94a3b8',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.07)',
-                    borderRadius: '8px',
-                    padding: '0.28rem 0.6rem',
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 3.4vw, 2.75rem)',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              lineHeight: 1.08,
+              color: '#f8fafc',
+            }}>
+              Vía Segura
+            </h1>
+
+            <p style={{
+              color: '#94a3b8',
+              fontSize: '0.98rem',
+              maxWidth: '58ch',
+              lineHeight: 1.55,
+            }}>
+              Practica situaciones reales de tránsito y consulta multas según la ley.
+            </p>
           </div>
         </div>
 
-        {/* Right Bento Telemetry Card */}
+        {/* Right Bento Progress Card */}
         <div className="bezel-shell">
-          <div className="bezel-core" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: '#64748b', fontWeight: 700 }}>
-                Telemetría de Sesión
-              </span>
-              <span className="tabular-nums" style={{ fontSize: '0.72rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.1)', padding: '0.18rem 0.55rem', borderRadius: '9999px' }}>
-                Activa · LOPDP
-              </span>
+          <div className="bezel-core" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.85rem' }}>
+            <div>
+              <h2 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+                Tu progreso
+              </h2>
+              <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.1rem' }}>
+                Resumen de tus prácticas en esta sesión.
+              </p>
             </div>
 
             <div style={{
@@ -470,14 +461,14 @@ export default function App() {
                 background: 'rgba(5, 7, 11, 0.55)',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: '16px',
-                padding: '0.9rem 0.75rem',
+                padding: '0.85rem 0.75rem',
               }}>
                 <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
                   Aciertos
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#10b981', marginTop: '0.25rem' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10b981', marginTop: '0.2rem' }}>
                   {estadisticas.aciertos}
-                  <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 500 }}>/{estadisticas.total}</span>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>/{estadisticas.total}</span>
                 </div>
               </div>
 
@@ -485,12 +476,12 @@ export default function App() {
                 background: 'rgba(5, 7, 11, 0.55)',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: '16px',
-                padding: '0.9rem 0.75rem',
+                padding: '0.85rem 0.75rem',
               }}>
                 <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
-                  Multas SBU
+                  Multas
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#f59e0b', marginTop: '0.25rem' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#f59e0b', marginTop: '0.2rem' }}>
                   ${estadisticas.multasAcumuladasUSD.toFixed(2)}
                 </div>
               </div>
@@ -499,20 +490,15 @@ export default function App() {
                 background: 'rgba(5, 7, 11, 0.55)',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: '16px',
-                padding: '0.9rem 0.75rem',
+                padding: '0.85rem 0.75rem',
               }}>
                 <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
-                  Puntos COIP
+                  Puntos
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#f43f5e', marginTop: '0.25rem' }}>
+                <div className="tabular-nums" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f43f5e', marginTop: '0.2rem' }}>
                   -{estadisticas.puntosPerdidos.toFixed(1)}
                 </div>
               </div>
-            </div>
-
-            <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Cálculo determinista en código</span>
-              <span className="tabular-nums">RO 512 (2021)</span>
             </div>
           </div>
         </div>
@@ -522,91 +508,102 @@ export default function App() {
         <>
           {/* Scenario Configuration Double-Bezel Bar */}
           <section className="bezel-shell reveal-up" aria-label="Configuración del escenario vial">
-            <div className="bezel-core" style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '1.25rem',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-            }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.15rem', flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', minWidth: '210px' }}>
-                  <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    Perfil del Ciudadano
-                  </label>
-                  <select
-                    value={perfil}
-                    onChange={(e) => setPerfil(e.target.value as Perfil)}
-                    disabled={estado === 'cargando'}
-                    className="control-input"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <option value="conductor_particular">Conductor Particular (Lic. B)</option>
-                    <option value="conductor_profesional">Conductor Profesional (Lic. C/D/E)</option>
-                    <option value="motociclista">Motociclista (Lic. A)</option>
-                    <option value="ciclista">Ciclista</option>
-                    <option value="peaton">Peatón</option>
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', minWidth: '210px' }}>
-                  <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    Nivel de Dificultad
-                  </label>
-                  <select
-                    value={dificultad}
-                    onChange={(e) => setDificultad(e.target.value as Dificultad)}
-                    disabled={estado === 'cargando'}
-                    className="control-input"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <option value="baja">Baja (Situación cotidiana)</option>
-                    <option value="media">Media (Dilema con agente / señal)</option>
-                    <option value="alta">Alta (Condiciones complejas / clima)</option>
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', flex: 1, minWidth: '220px' }}>
-                  <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    Tema Vial Opcional
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej. semáforo, paso cebra, velocidad..."
-                    value={tema}
-                    onChange={(e) => setTema(e.target.value)}
-                    disabled={estado === 'cargando'}
-                    maxLength={100}
-                    className="control-input"
-                  />
-                </div>
+            <div className="bezel-core" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.08rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.015em' }}>
+                  Configura tu escenario
+                </h2>
+                <p style={{ fontSize: '0.86rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                  Selecciona tu rol en la vía y el nivel de complejidad.
+                </p>
               </div>
 
-              <button
-                onClick={solicitarEscenario}
-                disabled={estado === 'cargando' || estado === 'reintentar'}
-                className="btn-island"
-                style={{
-                  background: estado === 'reintentar'
-                    ? '#334155'
-                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: estado === 'reintentar' ? '#cbd5e1' : '#03120c',
-                  boxShadow: estado === 'reintentar' ? 'none' : '0 10px 26px -6px rgba(16, 185, 129, 0.45)',
-                  cursor: estado === 'cargando' || estado === 'reintentar' ? 'not-allowed' : 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <span>
-                  {estado === 'cargando'
-                    ? 'Generando escenario...'
-                    : estado === 'reintentar'
-                    ? `Espera ${cuentaRegresiva}s`
-                    : 'Generar Escenario'}
-                </span>
-                <span className="btn-icon-wrap" style={{ color: '#fff' }}>
-                  <IconArrowUpRight />
-                </span>
-              </button>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '1.25rem',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+              }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.15rem', flex: 1 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', minWidth: '210px' }}>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      Perfil del Ciudadano
+                    </label>
+                    <select
+                      value={perfil}
+                      onChange={(e) => setPerfil(e.target.value as Perfil)}
+                      disabled={estado === 'cargando'}
+                      className="control-input"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="conductor_particular">Conductor Particular (Lic. B)</option>
+                      <option value="conductor_profesional">Conductor Profesional (Lic. C/D/E)</option>
+                      <option value="motociclista">Motociclista (Lic. A)</option>
+                      <option value="ciclista">Ciclista</option>
+                      <option value="peaton">Peatón</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', minWidth: '210px' }}>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      Nivel de Dificultad
+                    </label>
+                    <select
+                      value={dificultad}
+                      onChange={(e) => setDificultad(e.target.value as Dificultad)}
+                      disabled={estado === 'cargando'}
+                      className="control-input"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="baja">Baja (Situación cotidiana)</option>
+                      <option value="media">Media (Dilema con agente / señal)</option>
+                      <option value="alta">Alta (Condiciones complejas / clima)</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', flex: 1, minWidth: '220px' }}>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      Tema Vial Opcional
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ej. semáforo, paso cebra, velocidad..."
+                      value={tema}
+                      onChange={(e) => setTema(e.target.value)}
+                      disabled={estado === 'cargando'}
+                      maxLength={100}
+                      className="control-input"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={solicitarEscenario}
+                  disabled={estado === 'cargando' || estado === 'reintentar'}
+                  className="btn-island"
+                  style={{
+                    background: estado === 'reintentar'
+                      ? '#334155'
+                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: estado === 'reintentar' ? '#cbd5e1' : '#03120c',
+                    boxShadow: estado === 'reintentar' ? 'none' : '0 10px 26px -6px rgba(16, 185, 129, 0.45)',
+                    cursor: estado === 'cargando' || estado === 'reintentar' ? 'not-allowed' : 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span>
+                    {estado === 'cargando'
+                      ? 'Generando...'
+                      : estado === 'reintentar'
+                      ? `Espera ${cuentaRegresiva}s`
+                      : 'Generar Escenario'}
+                  </span>
+                  <span className="btn-icon-wrap" style={{ color: '#fff' }}>
+                    <IconArrowUpRight />
+                  </span>
+                </button>
+              </div>
             </div>
           </section>
 
@@ -616,17 +613,15 @@ export default function App() {
                 background: 'rgba(245, 158, 11, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: '0.9rem',
                 color: '#fbbf24',
                 padding: '1.1rem 1.4rem',
               }}>
-                <span className="tabular-nums" style={{ fontSize: '0.85rem', fontWeight: 700, padding: '0.3rem 0.6rem', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.2)' }}>
-                  HTTP 429
-                </span>
                 <div>
-                  <strong style={{ display: 'block', fontSize: '0.95rem' }}>Límite de velocidad activo (RFC 9457)</strong>
+                  <strong style={{ display: 'block', fontSize: '0.95rem' }}>Demasiadas solicitudes</strong>
                   <span style={{ fontSize: '0.88rem', color: '#fde68a' }}>
-                    {mensajeError} <strong className="tabular-nums">{cuentaRegresiva} segundos</strong>.
+                    Espera <strong className="tabular-nums">{cuentaRegresiva} segundos</strong> antes de intentar de nuevo.
                   </span>
                 </div>
               </div>
@@ -643,9 +638,6 @@ export default function App() {
                 color: '#fda4af',
                 padding: '1.1rem 1.4rem',
               }}>
-                <span className="tabular-nums" style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0.3rem 0.6rem', borderRadius: '8px', background: 'rgba(244, 63, 94, 0.2)' }}>
-                  ALERTA
-                </span>
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.95rem' }}>No se pudo completar la operación</strong>
                   <span style={{ fontSize: '0.88rem' }}>{mensajeError}</span>
@@ -654,13 +646,12 @@ export default function App() {
             </div>
           )}
 
-          {/* Skeleton Loading State when generating scenario */}
+          {/* Skeleton Loading State */}
           {estado === 'cargando' && !escenario && (
             <div className="bezel-shell reveal-up">
               <div className="bezel-core" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 <div className="skeleton-bar" style={{ width: '240px', height: '22px' }} />
                 <div className="skeleton-bar" style={{ width: '92%', height: '32px' }} />
-                <div className="skeleton-bar" style={{ width: '76%', height: '24px' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
                   {[1, 2, 3, 4].map((n) => (
                     <div key={n} className="skeleton-bar" style={{ width: '100%', height: '58px', borderRadius: '16px' }} />
@@ -670,32 +661,23 @@ export default function App() {
             </div>
           )}
 
-          {/* Composed Empty State before first scenario */}
+          {/* Composed Empty State */}
           {estado === 'inactiva' && !escenario && (
             <div className="bezel-shell reveal-up">
               <div className="bezel-core" style={{
-                padding: '2.5rem 2rem',
+                padding: '2.25rem 2rem',
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '1.5rem',
               }}>
-                <div style={{ maxWidth: '58ch' }}>
-                  <span style={{
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.16em',
-                    color: '#34d399',
-                  }}>
-                    Entrenamiento Normativo Interactivo
-                  </span>
-                  <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f8fafc', marginTop: '0.35rem', letterSpacing: '-0.02em' }}>
-                    Selecciona un perfil vial y genera tu primer dilema jurídico
+                <div>
+                  <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.02em' }}>
+                    Practica una situación vial
                   </h2>
-                  <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.45rem' }}>
-                    Cada escenario vincula una situación realista de tránsito en Ecuador con su tipificación exacta en el COIP y calcula la sanción pecuniaria usando el Salario Básico Unificado 2026 ($482.00 USD) sin alucinaciones aritméticas.
+                  <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.3rem' }}>
+                    Elige tu perfil, dificultad y genera un caso para resolver.
                   </p>
                 </div>
                 <button
@@ -719,7 +701,7 @@ export default function App() {
           {escenario && (
             <main className="bezel-shell reveal-up">
               <div className="bezel-core" style={{ padding: '2.1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.35rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
                   <span style={{
                     fontSize: '0.74rem',
                     fontWeight: 700,
@@ -731,10 +713,7 @@ export default function App() {
                     padding: '0.3rem 0.75rem',
                     borderRadius: '9999px',
                   }}>
-                    Escenario · {escenario.perfil.replace('_', ' ')} · Dificultad {escenario.nivel_dificultad}
-                  </span>
-                  <span className="tabular-nums" style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                    ID: {escenario.id_escenario}
+                    {escenario.perfil.replace('_', ' ')} · Dificultad {escenario.nivel_dificultad}
                   </span>
                 </div>
 
@@ -746,7 +725,7 @@ export default function App() {
                   letterSpacing: '-0.015em',
                   marginBottom: '1.85rem',
                 }}>
-                  {escenario.situacion}
+                  {formatearEnunciado(escenario.situacion, tema)}
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.85rem' }}>
@@ -844,26 +823,9 @@ export default function App() {
                       borderRadius: '20px',
                       padding: '1.6rem',
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                        <span
-                          className="tabular-nums"
-                          style={{
-                            padding: '0.25rem 0.65rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.1em',
-                            textTransform: 'uppercase',
-                            background: resultado.es_correcta ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
-                            color: resultado.es_correcta ? '#34d399' : '#fb7185',
-                          }}
-                        >
-                          {resultado.es_correcta ? 'Veredicto: Conforme' : 'Veredicto: Infracción'}
-                        </span>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: resultado.es_correcta ? '#34d399' : '#fb7185', letterSpacing: '-0.02em' }}>
-                          {resultado.es_correcta ? 'Decisión Correcta Conforme a la Ley' : 'Infracción Detectada: Conducta no permitida'}
-                        </h3>
-                      </div>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: resultado.es_correcta ? '#34d399' : '#fb7185', letterSpacing: '-0.02em', marginBottom: '0.6rem' }}>
+                        {resultado.es_correcta ? 'Decisión correcta conforme a la ley' : 'Conducta sancionada por la ley'}
+                      </h3>
 
                       <p style={{ color: '#e2e8f0', fontSize: '0.98rem', lineHeight: 1.65, marginBottom: '1.35rem' }}>
                         {resultado.explicacion_educativa}
@@ -874,9 +836,9 @@ export default function App() {
                         border: '1px solid rgba(255, 255, 255, 0.07)',
                         borderRadius: '16px',
                         padding: '1.25rem',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                        gap: '1.1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.85rem',
                       }}>
                         <div>
                           <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
@@ -885,38 +847,25 @@ export default function App() {
                           <div className="tabular-nums" style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.96rem', marginTop: '0.2rem' }}>
                             {resultado.contravencion.articulo} · {resultado.contravencion.clase}
                           </div>
-                          <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{resultado.contravencion.norma}</div>
-                        </div>
-
-                        <div>
-                          <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
-                            Multa Pecuniaria (SBU: ${resultado.sancion.sbu_usd.toFixed(2)})
-                          </span>
-                          <div className="tabular-nums" style={{ fontWeight: 800, color: '#f59e0b', fontSize: '1.2rem', marginTop: '0.2rem' }}>
-                            ${resultado.sancion.multa_usd.toFixed(2)} USD
-                          </div>
-                          <div className="tabular-nums" style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                            ({resultado.sancion.porcentaje_sbu}% del Salario Básico)
-                          </div>
-                        </div>
-
-                        <div>
-                          <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', fontWeight: 600 }}>
-                            Puntos COIP / Vigentes (RO 512)
-                          </span>
-                          <div className="tabular-nums" style={{ fontWeight: 800, color: '#f43f5e', fontSize: '1.2rem', marginTop: '0.2rem' }}>
-                            -{resultado.sancion.puntos_reducidos} pts{' '}
-                            <span style={{ fontSize: '0.82rem', color: '#94a3b8', fontWeight: 500 }}>
-                              (Hoy: -{resultado.sancion.puntos_aplicables ?? resultado.sancion.puntos_reducidos} pts)
-                            </span>
-                          </div>
                           <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                            {resultado.sancion.pena_adicional
-                              ? resultado.sancion.pena_adicional
-                              : resultado.sancion.dias_privacion_libertad > 0
-                              ? `+ ${resultado.sancion.dias_privacion_libertad} días privación libertad`
-                              : 'Reforma 2021: sin resta de puntos en 3ª–7ª clase'}
+                            {resultado.contravencion.norma} · RO 512 (2021)
                           </div>
+                        </div>
+
+                        <div
+                          className="tabular-nums"
+                          style={{
+                            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                            paddingTop: '0.85rem',
+                            fontSize: '0.98rem',
+                            fontWeight: 700,
+                            color: '#f8fafc',
+                          }}
+                        >
+                          Si cometes esta infracción: multa de{' '}
+                          <span style={{ color: '#f59e0b' }}>${resultado.sancion.multa_usd.toFixed(2)}</span>{' '}
+                          ({Math.round((resultado.sancion.multa_usd / resultado.sancion.sbu_usd) * 10000) / 100}% del SBU) y{' '}
+                          <span style={{ color: '#f43f5e' }}>-{resultado.sancion.puntos_reducidos} puntos</span>.
                         </div>
                       </div>
 
@@ -931,15 +880,27 @@ export default function App() {
                           color: '#cbd5e1',
                         }}>
                           <strong style={{ color: '#34d399', display: 'block', marginBottom: '0.25rem' }}>
-                            Cita literal verificada ({resultado.contravencion.articulo} · {resultado.contravencion.norma}):
+                            Fuente legal ({resultado.contravencion.articulo} · {resultado.contravencion.norma}):
                           </strong>
                           «{resultado.contravencion.texto_literal_coip}»
                         </div>
                       )}
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{resultado.aviso}</span>
+                    <details className="tech-details">
+                      <summary>
+                        <span>Detalles técnicos</span>
+                        <span className="tabular-nums">▾</span>
+                      </summary>
+                      <div className="tech-details-body" style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                        <div className="tabular-nums">
+                          ID escenario: {escenario.id_escenario} · Contravención: {resultado.contravencion.id_contravencion} ({resultado.contravencion.codigo_csv || 'COIP'})
+                        </div>
+                        <div>{resultado.aviso}</div>
+                      </div>
+                    </details>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <button
                         onClick={solicitarEscenario}
                         className="btn-island"
@@ -964,55 +925,46 @@ export default function App() {
       )}
 
       {vista === 'rag_agente' && (
-        <section className="bezel-shell reveal-up" aria-label="Consultor RAG y Agente Controlado">
-          <div className="bezel-core" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <section className="bezel-shell reveal-up" aria-label="Consulta de normativa">
+          <div className="bezel-core" style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
             <div>
-              <span style={{
-                display: 'inline-block',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                color: '#fbbf24',
-                textTransform: 'uppercase',
-                letterSpacing: '0.16em',
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.28)',
-                padding: '0.25rem 0.7rem',
-                borderRadius: '9999px',
-              }}>
-                Módulo 3 · RAG ChromaDB (`intfloat/multilingual-e5-small`) · Agente con Tool Calling
-              </span>
-              <h2 style={{ fontSize: 'clamp(1.3rem, 2.2vw, 1.6rem)', fontWeight: 800, color: '#f8fafc', marginTop: '0.55rem', letterSpacing: '-0.025em' }}>
-                Consultor Normativo con Cita Verificada, Distancia Coseno y Regla de Silencio
+              <h2 style={{ fontSize: 'clamp(1.3rem, 2.2vw, 1.55rem)', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.025em' }}>
+                Consulta de infracciones y multas
               </h2>
-              <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.3rem', maxWidth: '72ch' }}>
-                El RAG recupera los 5 artículos vigentes más cercanos (<code className="tabular-nums">where={'{"vigente": True}'}</code>), el agente invoca herramientas tipadas con Pydantic para calcular la multa SBU 2026 ($482.00) y verifica la cita dentro de un tope máximo de 6 vueltas.
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.2rem' }}>
+                Pregunta con tus propias palabras sobre multas, puntos y normas de tránsito.
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
-              {EJEMPLOS_SEMANA3.map((ej, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setPreguntaChat(ej.pregunta);
-                    setDemoEnvenenado(ej.envenenado);
-                    enviarConsultaRAG(ej.pregunta, ej.envenenado);
-                  }}
-                  style={{
-                    background: preguntaChat === ej.pregunta ? 'rgba(245, 158, 11, 0.16)' : 'rgba(255, 255, 255, 0.03)',
-                    border: `1px solid ${preguntaChat === ej.pregunta ? 'rgba(245, 158, 11, 0.45)' : 'rgba(255, 255, 255, 0.09)'}`,
-                    color: preguntaChat === ej.pregunta ? '#fde68a' : '#cbd5e1',
-                    borderRadius: '9999px',
-                    padding: '0.45rem 0.9rem',
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-                  }}
-                >
-                  {ej.etiqueta}
-                </button>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Ejemplos para probar
+              </span>
+              <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+                {EJEMPLOS_SEMANA3.map((ej, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setPreguntaChat(ej.pregunta);
+                      setDemoEnvenenado(ej.envenenado);
+                      enviarConsultaRAG(ej.pregunta, ej.envenenado);
+                    }}
+                    style={{
+                      background: preguntaChat === ej.pregunta ? 'rgba(245, 158, 11, 0.16)' : 'rgba(255, 255, 255, 0.03)',
+                      border: `1px solid ${preguntaChat === ej.pregunta ? 'rgba(245, 158, 11, 0.45)' : 'rgba(255, 255, 255, 0.09)'}`,
+                      color: preguntaChat === ej.pregunta ? '#fde68a' : '#cbd5e1',
+                      borderRadius: '9999px',
+                      padding: '0.45rem 0.9rem',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+                    }}
+                  >
+                    {ej.etiqueta}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -1020,7 +972,7 @@ export default function App() {
                 type="text"
                 value={preguntaChat}
                 onChange={(e) => setPreguntaChat(e.target.value)}
-                placeholder="Escribe una pregunta en lenguaje ciudadano (ej. Me pasé un semáforo en rojo, ¿cuánto pago?)"
+                placeholder="Ej. Me pasé un semáforo en rojo, ¿cuánto debo pagar?"
                 className="control-input"
                 style={{ flex: 1, minWidth: '260px' }}
               />
@@ -1035,7 +987,7 @@ export default function App() {
                   cursor: cargandoChat ? 'not-allowed' : 'pointer',
                 }}
               >
-                <span>{cargandoChat ? 'Buscando en ChromaDB...' : 'Consultar RAG + Agente'}</span>
+                <span>{cargandoChat ? 'Consultando...' : 'Consultar norma'}</span>
                 <span className="btn-icon-wrap" style={{ color: '#fff' }}>
                   <IconArrowUpRight />
                 </span>
@@ -1050,172 +1002,237 @@ export default function App() {
             )}
 
             {respuestaChat && !cargandoChat && (
-              <div className="reveal-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div
-                  className="tabular-nums"
-                  style={{
-                    background: 'rgba(245, 158, 11, 0.1)',
-                    border: '1px solid rgba(245, 158, 11, 0.35)',
-                    borderRadius: '14px',
-                    padding: '0.9rem 1.2rem',
-                    color: '#fde68a',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  {respuestaChat.resumen_clase}
-                </div>
-
-                {respuestaChat.alerta_seguridad && (
-                  <div style={{
-                    background: 'rgba(244, 63, 94, 0.12)',
-                    border: '1.5px solid #f43f5e',
-                    borderRadius: '14px',
-                    padding: '1rem 1.2rem',
-                    color: '#fecdd3',
-                    fontSize: '0.9rem',
-                  }}>
-                    <strong>Defensa Activa contra Inyección Indirecta (Revisión 3):</strong> {respuestaChat.alerta_seguridad}
-                  </div>
-                )}
-
+              <div className="reveal-up" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+                {/* Respuesta principal visible al ciudadano */}
                 <div style={{
                   background: respuestaChat.abstencion ? 'rgba(244, 63, 94, 0.07)' : 'rgba(16, 185, 129, 0.08)',
                   border: `1.5px solid ${respuestaChat.abstencion ? 'rgba(244, 63, 94, 0.45)' : 'rgba(16, 185, 129, 0.45)'}`,
                   borderRadius: '18px',
                   padding: '1.45rem',
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                  <div style={{ marginBottom: '0.55rem' }}>
                     <strong style={{ color: respuestaChat.abstencion ? '#fb7185' : '#34d399', fontSize: '1.05rem' }}>
                       {respuestaChat.abstencion
-                        ? `Modo Silencio / Derivación (${respuestaChat.tipo})`
-                        : `Respuesta Fundamentada · Cita Verificada: ${respuestaChat.citas.join(', ')}`}
+                        ? 'Orientación institucional'
+                        : `Fuente legal: ${respuestaChat.citas.join(', ')}`}
                     </strong>
-                    <span className="tabular-nums" style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                      Mejor distancia coseno: {respuestaChat.mejor_distancia.toFixed(2)} (umbral: {respuestaChat.umbral_distancia ?? 0.45})
-                    </span>
                   </div>
+
                   <p style={{ color: '#f1f5f9', lineHeight: 1.65, margin: 0 }}>{respuestaChat.respuesta}</p>
 
                   {respuestaChat.sancion_calculada && (
-                    <div style={{
-                      marginTop: '1.1rem',
-                      background: 'rgba(5, 7, 11, 0.6)',
-                      border: '1px solid rgba(255, 255, 255, 0.07)',
-                      borderRadius: '14px',
-                      padding: '1.05rem',
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-                      gap: '0.85rem',
-                    }}>
-                      <div>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                          Cálculo Determinista (`calcular_sancion`)
-                        </span>
-                        <div className="tabular-nums" style={{ fontWeight: 800, color: '#f59e0b', fontSize: '1.15rem', marginTop: '0.15rem' }}>
-                          ${respuestaChat.sancion_calculada.multa_usd.toFixed(2)} USD ({respuestaChat.sancion_calculada.porcentaje_sbu}% SBU)
-                        </div>
-                      </div>
-                      <div>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                          Puntos Texto COIP / Hoy
-                        </span>
-                        <div className="tabular-nums" style={{ fontWeight: 800, color: '#f43f5e', fontSize: '1.08rem', marginTop: '0.15rem' }}>
-                          -{respuestaChat.sancion_calculada.puntos_texto_coip} pts (Hoy: -{respuestaChat.sancion_calculada.puntos_aplicables_hoy} pts)
-                        </div>
-                      </div>
-                      <div>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                          Código Tabla Oficial
-                        </span>
-                        <div className="tabular-nums" style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.92rem', marginTop: '0.15rem' }}>
-                          {respuestaChat.sancion_calculada.codigo_csv} · {respuestaChat.sancion_calculada.id_contravencion}
-                        </div>
-                      </div>
+                    <div
+                      className="tabular-nums"
+                      style={{
+                        marginTop: '1.1rem',
+                        background: 'rgba(5, 7, 11, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.07)',
+                        borderRadius: '14px',
+                        padding: '1rem 1.15rem',
+                        fontSize: '0.96rem',
+                        fontWeight: 700,
+                        color: '#f8fafc',
+                      }}
+                    >
+                      Si cometes esta infracción: multa de{' '}
+                      <span style={{ color: '#f59e0b' }}>${respuestaChat.sancion_calculada.multa_usd.toFixed(2)}</span>{' '}
+                      ({Math.round((respuestaChat.sancion_calculada.multa_usd / respuestaChat.sancion_calculada.sbu_referencia_usd) * 10000) / 100}% del SBU) y{' '}
+                      <span style={{ color: '#f43f5e' }}>-{respuestaChat.sancion_calculada.puntos_texto_coip} puntos</span>.
                     </div>
                   )}
                 </div>
 
-                {respuestaChat.fragmentos.length > 0 && (
+                {/* Confirmación humana clara (solo cuando no es regla de silencio) */}
+                {respuestaChat.tipo !== 'silencio' && (
                   <div style={{
-                    background: 'rgba(5, 7, 11, 0.55)',
-                    border: '1px solid rgba(255, 255, 255, 0.07)',
+                    background: confirmacionHumana === 'confirmada'
+                      ? 'rgba(16, 185, 129, 0.08)'
+                      : confirmacionHumana === 'descartada'
+                      ? 'rgba(244, 63, 94, 0.08)'
+                      : 'rgba(15, 23, 42, 0.72)',
+                    border: `1px solid ${
+                      confirmacionHumana === 'confirmada'
+                        ? 'rgba(16, 185, 129, 0.4)'
+                        : confirmacionHumana === 'descartada'
+                        ? 'rgba(244, 63, 94, 0.35)'
+                        : 'rgba(255, 255, 255, 0.12)'
+                    }`,
                     borderRadius: '18px',
-                    padding: '1.25rem',
+                    padding: '1.1rem 1.35rem',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '1rem',
                   }}>
-                    <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#fbbf24', marginBottom: '0.85rem' }}>
-                      Top-5 Vecinos Más Cercanos en ChromaDB (<code className="tabular-nums">where={'{"vigente": True}'}</code> · Modelo <code className="tabular-nums">{respuestaChat.modelo_embeddings || 'intfloat/multilingual-e5-small'}</code>)
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                      {respuestaChat.fragmentos.map((f) => (
-                        <div
-                          key={f.id}
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#f8fafc' }}>
+                      {confirmacionHumana === 'pendiente' && 'Confirmar acción: el asistente necesita tu aprobación para continuar.'}
+                      {confirmacionHumana === 'confirmada' && 'Acción aprobada.'}
+                      {confirmacionHumana === 'descartada' && 'Acción descartada.'}
+                    </div>
+
+                    {confirmacionHumana === 'pendiente' ? (
+                      <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => setConfirmacionHumana('confirmada')}
+                          className="btn-island"
                           style={{
-                            background: f.puesto === 1 ? 'rgba(245, 158, 11, 0.09)' : 'rgba(15, 23, 42, 0.6)',
-                            border: `1px solid ${f.puesto === 1 ? 'rgba(245, 158, 11, 0.38)' : 'rgba(255, 255, 255, 0.06)'}`,
-                            borderRadius: '12px',
-                            padding: '0.8rem 1rem',
-                            fontSize: '0.86rem',
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                            color: '#03120c',
+                            padding: '0.45rem 0.55rem 0.45rem 1.1rem',
+                            fontSize: '0.84rem',
                           }}
                         >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.28rem' }}>
-                            <span>#{f.puesto} · {f.documento} — Art. {f.articulo} ({f.id})</span>
-                            <span className="tabular-nums" style={{ color: '#fbbf24', fontSize: '0.78rem' }}>
-                              distancia coseno: {f.distancia.toFixed(2)} | vigente: {String(f.metadatos.vigente)}
-                            </span>
-                          </div>
-                          <div style={{ color: '#94a3b8', fontSize: '0.82rem' }}>
-                            {f.texto.slice(0, 220)}{f.texto.length > 220 ? '…' : ''}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                          <span>Confirmar</span>
+                          <span className="btn-icon-wrap" style={{ color: '#fff', width: '26px', height: '26px' }}>
+                            <IconArrowUpRight />
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => setConfirmacionHumana('descartada')}
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.14)',
+                            color: '#cbd5e1',
+                            borderRadius: '9999px',
+                            padding: '0.45rem 1rem',
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Descartar
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="tabular-nums" style={{
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        padding: '0.3rem 0.75rem',
+                        borderRadius: '9999px',
+                        background: confirmacionHumana === 'confirmada' ? 'rgba(16, 185, 129, 0.18)' : 'rgba(244, 63, 94, 0.18)',
+                        color: confirmacionHumana === 'confirmada' ? '#34d399' : '#fb7185',
+                      }}>
+                        {confirmacionHumana === 'confirmada' ? 'APROBADO' : 'DESCARTADO'}
+                      </span>
+                    )}
                   </div>
                 )}
 
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))',
-                  gap: '1rem',
-                }}>
-                  <div style={{
-                    background: 'rgba(5, 7, 11, 0.55)',
-                    border: '1px solid rgba(255, 255, 255, 0.07)',
-                    borderRadius: '18px',
-                    padding: '1.2rem',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.7rem' }}>
-                      <strong style={{ color: '#34d399', fontSize: '0.9rem' }}>Agente con Tool Calling Nativo</strong>
-                      <span className="tabular-nums" style={{ fontSize: '0.8rem', color: '#fbbf24' }}>
-                        Vueltas: {respuestaChat.agente.vueltas_usadas} / {respuestaChat.agente.tope_vueltas}
-                      </span>
+                {/* Panel plegable de Detalles técnicos (cerrado por defecto) */}
+                <details className="tech-details">
+                  <summary>
+                    <span>Detalles técnicos</span>
+                    <span className="tabular-nums">▾</span>
+                  </summary>
+                  <div className="tech-details-body">
+                    <div
+                      className="tabular-nums"
+                      style={{
+                        background: 'rgba(245, 158, 11, 0.1)',
+                        border: '1px solid rgba(245, 158, 11, 0.35)',
+                        borderRadius: '12px',
+                        padding: '0.75rem 1rem',
+                        color: '#fde68a',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {respuestaChat.resumen_clase}
                     </div>
-                    {respuestaChat.agente.bitacora.map((b, idx) => (
-                      <div key={idx} style={{ fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '0.5rem', borderLeft: '2px solid #10b981', paddingLeft: '0.65rem' }}>
-                        <strong className="tabular-nums" style={{ color: '#f8fafc' }}>Vuelta {b.vuelta} ({b.herramienta}):</strong> {b.detalle}
-                      </div>
-                    ))}
-                  </div>
 
-                  <div style={{
-                    background: 'rgba(5, 7, 11, 0.55)',
-                    border: '1px solid rgba(255, 255, 255, 0.07)',
-                    borderRadius: '18px',
-                    padding: '1.2rem',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.7rem' }}>
-                      <strong style={{ color: '#a78bfa', fontSize: '0.9rem' }}>Automatización Inteligente (4 Estaciones)</strong>
-                      <span className="tabular-nums" style={{ fontSize: '0.8rem', color: '#c4b5fd' }}>
-                        Confianza: {(respuestaChat.automatizacion.confianza * 100).toFixed(0)}%
-                      </span>
+                    <div className="tabular-nums" style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                      Mejor distancia coseno: {respuestaChat.mejor_distancia.toFixed(2)} · Umbral: {respuestaChat.umbral_distancia ?? 0.45} · Modelo: {respuestaChat.modelo_embeddings || 'intfloat/multilingual-e5-small'}
                     </div>
-                    {respuestaChat.automatizacion.estaciones.map((st, idx) => (
-                      <div key={idx} style={{ fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '0.5rem', borderLeft: '2px solid #8b5cf6', paddingLeft: '0.65rem' }}>
-                        <strong style={{ color: '#f8fafc' }}>{st.estacion} [{st.actor}]:</strong> {st.resultado}
+
+                    {respuestaChat.alerta_seguridad && (
+                      <div style={{
+                        background: 'rgba(244, 63, 94, 0.12)',
+                        border: '1px solid #f43f5e',
+                        borderRadius: '12px',
+                        padding: '0.85rem 1rem',
+                        color: '#fecdd3',
+                        fontSize: '0.84rem',
+                      }}>
+                        <strong>Defensa contra inyección en documentos:</strong> {respuestaChat.alerta_seguridad}
                       </div>
-                    ))}
+                    )}
+
+                    {respuestaChat.fragmentos.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <strong style={{ fontSize: '0.82rem', color: '#fbbf24' }}>
+                          Fragmentos normativos recuperados (Top-5)
+                        </strong>
+                        {respuestaChat.fragmentos.map((f) => (
+                          <div
+                            key={f.id}
+                            style={{
+                              background: 'rgba(15, 23, 42, 0.6)',
+                              border: '1px solid rgba(255, 255, 255, 0.06)',
+                              borderRadius: '10px',
+                              padding: '0.65rem 0.85rem',
+                              fontSize: '0.8rem',
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.2rem' }}>
+                              <span>#{f.puesto} · {f.documento} — Art. {f.articulo} ({f.id})</span>
+                              <span className="tabular-nums" style={{ color: '#fbbf24', fontSize: '0.75rem' }}>
+                                distancia: {f.distancia.toFixed(2)} | vigente: {String(f.metadatos.vigente)}
+                              </span>
+                            </div>
+                            <div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>
+                              {f.texto.slice(0, 220)}{f.texto.length > 220 ? '…' : ''}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gap: '0.85rem',
+                    }}>
+                      <div style={{
+                        background: 'rgba(15, 23, 42, 0.5)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: '12px',
+                        padding: '0.9rem',
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <strong style={{ color: '#34d399', fontSize: '0.82rem' }}>Bitácora del Agente</strong>
+                          <span className="tabular-nums" style={{ fontSize: '0.76rem', color: '#fbbf24' }}>
+                            Vueltas: {respuestaChat.agente.vueltas_usadas} / {respuestaChat.agente.tope_vueltas}
+                          </span>
+                        </div>
+                        {respuestaChat.agente.bitacora.map((b, idx) => (
+                          <div key={idx} style={{ fontSize: '0.76rem', color: '#cbd5e1', marginBottom: '0.4rem', borderLeft: '2px solid #10b981', paddingLeft: '0.55rem' }}>
+                            <strong className="tabular-nums" style={{ color: '#f8fafc' }}>Vuelta {b.vuelta} ({b.herramienta}):</strong> {b.detalle}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{
+                        background: 'rgba(15, 23, 42, 0.5)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: '12px',
+                        padding: '0.9rem',
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <strong style={{ color: '#a78bfa', fontSize: '0.82rem' }}>Flujo de Automatización</strong>
+                          <span className="tabular-nums" style={{ fontSize: '0.76rem', color: '#c4b5fd' }}>
+                            Confianza: {(respuestaChat.automatizacion.confianza * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                        {respuestaChat.automatizacion.estaciones.map((st, idx) => (
+                          <div key={idx} style={{ fontSize: '0.76rem', color: '#cbd5e1', marginBottom: '0.4rem', borderLeft: '2px solid #8b5cf6', paddingLeft: '0.55rem' }}>
+                            <strong style={{ color: '#f8fafc' }}>{st.estacion} [{st.actor}]:</strong> {st.resultado}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </details>
               </div>
             )}
           </div>
@@ -1233,8 +1250,8 @@ export default function App() {
         justifyContent: 'space-between',
         gap: '1rem',
       }}>
-        <span>Simulador Vial «Vía Segura» · Escuela de Conducción UNIANDES · Caso N.° 08</span>
-        <span>Protección de Datos: Sesión anónima conforme a la LOPDP (Ecuador) · Cero recolección de PII</span>
+        <span>Universidad Regional Autónoma de los Andes (UNIANDES)</span>
+        <span>Orientación educativa · No solicita datos personales.</span>
       </footer>
     </div>
   );
