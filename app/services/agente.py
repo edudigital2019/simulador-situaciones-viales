@@ -333,6 +333,9 @@ def _sintetizar_respuesta_final(pregunta: str, ctx: dict[str, Any]) -> str:
             f"{MENSAJE_DERIVACION_DISPUTA}"
         )
 
+    if not fragmentos:
+        return MENSAJE_ABSTENCION_RAG
+
     top = fragmentos[0]
     cita_oficial = f"{top.get('documento', 'COIP')}, Art. {top.get('articulo', '')}"
     sancion = ctx.get("sancion_calculada")
@@ -374,7 +377,16 @@ def _planificador_modelo_tool_calling(
             ],
         )
 
-    herramientas_ejecutadas = [m["name"] for m in mensajes if m.get("role") == "tool"]
+    herramientas_ejecutadas = []
+    for mensaje in mensajes:
+        if mensaje.get("role") != "tool":
+            continue
+        try:
+            resultado = json.loads(mensaje.get("content") or "{}")
+        except (json.JSONDecodeError, TypeError):
+            resultado = {}
+        if resultado.get("ok") is not False:
+            herramientas_ejecutadas.append(mensaje["name"])
 
     if "buscar_normativa_rag" not in herramientas_ejecutadas:
         return MensajeModelo(
