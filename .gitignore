@@ -10,6 +10,10 @@ __pycache__/
 .pytest_cache/
 # Registros locales
 logs/
+
+# Artefactos personales generados localmente
+output/
+tmp/
 # Node / Frontend
 node_modules/
 frontend/node_modules/
