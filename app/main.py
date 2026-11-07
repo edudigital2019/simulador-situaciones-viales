@@ -157,7 +157,10 @@ def buscar_rag(
 
 
 @app.post("/chat")
-def chat_normativo(solicitud: SolicitudChat):
+def chat_normativo(
+    solicitud: SolicitudChat,
+    llm: ClienteLLM = Depends(obtener_llm),
+):
     try:
         pregunta = solicitud.obtener_pregunta()
     except ValueError as e:
@@ -184,7 +187,14 @@ def chat_normativo(solicitud: SolicitudChat):
                 },
             }
         ]
-    return ejecutar_agente_consulta(pregunta, fragmentos_extra=fragmentos_extra)
+    try:
+        return ejecutar_agente_consulta(
+            pregunta,
+            fragmentos_extra=fragmentos_extra,
+            cliente_llm=llm,
+        )
+    except ErrorLLM as e:
+        raise Problema(503, "Servicio no disponible", e.mensaje_usuario, cabeceras={"Retry-After": "30"})
 
 
 @app.post("/escenarios", response_model=EscenarioPublico)

@@ -103,7 +103,8 @@ def test_defensa_documento_envenenado_revision_3():
         SolicitudChat(
             pregunta="¿Cuál es la sanción por cruzar el semáforo en rojo según el Art. 389?",
             incluir_documento_envenenado_demo=True,
-        )
+        ),
+        llm=None,
     )
     assert resp["documento_envenenado"] is True
     assert resp["sancion_calculada"]["multa_usd"] == 144.60
@@ -124,8 +125,32 @@ def test_endpoint_chat_y_rag_buscar():
     assert cuerpo["abstencion"] is False
     assert cuerpo["cita_principal"] == "COIP, Art. 391"
 
-    chat = chat_normativo(SolicitudChat(pregunta="Me pasé un semáforo en rojo, ¿cuánto es la multa?"))
+    chat = chat_normativo(
+        SolicitudChat(pregunta="Me pasé un semáforo en rojo, ¿cuánto es la multa?"),
+        llm=None,
+    )
     assert chat["abstencion"] is False
     assert "COIP, Art. 389" in chat["citas"]
     assert chat["sancion_calculada"]["multa_usd"] == 144.60
     assert "encontró el Art. 389 en el puesto 1" in chat["resumen_clase"]
+
+
+def test_endpoint_chat_entrega_el_cliente_al_agente(monkeypatch):
+    cliente = object()
+    recibido = {}
+
+    def agente_falso(pregunta, fragmentos_extra=None, cliente_llm=None):
+        recibido["pregunta"] = pregunta
+        recibido["cliente"] = cliente_llm
+        return {"respuesta": "ok"}
+
+    monkeypatch.setattr("app.main.ejecutar_agente_consulta", agente_falso)
+
+    respuesta = chat_normativo(
+        SolicitudChat(pregunta="¿Qué indica el COIP sobre el semáforo en rojo?"),
+        llm=cliente,
+    )
+
+    assert respuesta == {"respuesta": "ok"}
+    assert recibido["pregunta"] == "¿Qué indica el COIP sobre el semáforo en rojo?"
+    assert recibido["cliente"] is cliente
