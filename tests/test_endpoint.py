@@ -79,7 +79,12 @@ def mock_escenario(**kw):
 
 
 def test_health():
-    assert con(LLMFalso()).get("/health").json() == {"estado": "ok"}
+    respuesta = con(LLMFalso()).get("/health")
+    datos = respuesta.json()
+
+    assert respuesta.status_code == 200
+    assert datos["status"] == "ok"
+    assert {"indice_cargado", "fragmentos", "modelo_configurado", "version"} <= datos.keys()
 
 
 def test_generar_escenario_oculta_respuesta_correcta():
