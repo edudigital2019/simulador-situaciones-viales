@@ -125,6 +125,12 @@ def test_clave_invalida_no_se_reintenta():
     assert len(principal.llamadas) == 1 and esperas == []
 
 
+def test_solicitud_demasiado_grande_da_error_controlado():
+    c, _ = cliente(Doble([error_http(openai.APIStatusError, 413)]), reintentos=1)
+    with pytest.raises(ProveedorNoDisponible):
+        c.generar_texto("sys", [{"role": "user", "content": "texto"}])
+
+
 def test_todos_caidos_da_error_claro():
     def caida():
         return error_http(openai.RateLimitError, 429, {"retry-after": "1"})

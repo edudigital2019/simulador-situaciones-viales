@@ -54,7 +54,13 @@ class _RespuestaVacia(Exception):
 
 
 REINTENTABLES = (openai.RateLimitError, openai.APITimeoutError, openai.APIConnectionError, openai.InternalServerError)
-DEFINITIVOS = (openai.AuthenticationError, openai.PermissionDeniedError, openai.NotFoundError, openai.BadRequestError)
+DEFINITIVOS = (
+    openai.AuthenticationError,
+    openai.PermissionDeniedError,
+    openai.NotFoundError,
+    openai.BadRequestError,
+    openai.APIStatusError,
+)
 ESPERA_MAXIMA_S = 20
 
 

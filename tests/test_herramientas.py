@@ -244,7 +244,7 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
 
     mock_llm = ClienteLLMMockToolCalling()
     res = ejecutar_agente_consulta("Semáforo en rojo", cliente_llm=mock_llm)
-    assert mock_llm.llamadas == 5
+    assert mock_llm.llamadas == 1
     assert "144.60 USD" in res["respuesta"]
     mensajes_traza = res["agente"]["mensajes"]
     assert any(m["role"] == "assistant" and m.get("tool_calls") for m in mensajes_traza)

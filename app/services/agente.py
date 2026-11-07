@@ -588,7 +588,8 @@ def ejecutar_agente_consulta(
     respuesta_final_modelo: str | None = None
 
     while vueltas < TOPE_VUELTAS:
-        msg_modelo = _solicitar_paso_modelo(pregunta, mensajes, ctx, cliente_llm=cliente_llm)
+        cliente_para_paso = cliente_llm if vueltas == 0 else None
+        msg_modelo = _solicitar_paso_modelo(pregunta, mensajes, ctx, cliente_llm=cliente_para_paso)
 
         if not msg_modelo.tool_calls:
             paso_obligatorio = _planificador_modelo_tool_calling(pregunta, mensajes, ctx)
