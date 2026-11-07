@@ -1,194 +1,182 @@
-# Vía Segura · Simulador Educativo de Situaciones Viales y Contravenciones
+# Vía Segura · Simulador de situaciones viales
 
-**Seminario de Titulación Complexivo: Ingeniería de Software con IA Generativa**  
-**Carrera de Software · Facultad de Sistemas Mercantiles · UNIANDES**  
-**Caso N.° 08 · Grupo 8 · Semanas 1, 2 y 3 (RAG)**
+> Seminario «Ingeniería de Software con IA Generativa» · UNIANDES 2026
+>
+> Caso 08 · Grupo 8
+>
+> Integrantes: Fausto Cando, Isidoro Guaman y Luis Naranjo
 
----
+## Qué problema resuelve y para quién
 
-## 1. Identificación del Proyecto
-- **Nombre del Producto:** Vía Segura — Simulador Educativo de Dilemas Viales y Contravenciones
-- **Caso Asignado:** Caso 08 (Simulador educativo con RAG y retroalimentación normativa COIP/LOTTTSV)
-- **Familia de Producto:** Planificadores y Simuladores Interactivos
-- **Equipo de Desarrollo:** Grupo 8 · Carrera de Software, UNIANDES
+Vía Segura ayuda a conductores, peatones y estudiantes a comprender situaciones viales y contravenciones de tránsito en Ecuador. El sistema presenta escenarios educativos y responde consultas utilizando normativa del COIP y la LOTTTSV. Las citas se recuperan mediante RAG y las sanciones se calculan en código para evitar que el modelo invente artículos o montos.
 
----
+## Demo
 
-## 2. Problema que Resuelve y Usuarios
-Los conductores y peatones en Ecuador desconocen con frecuencia qué conductas configuran contravenciones de tránsito, cuántos puntos se reducen de la licencia y el monto exacto de las multas según el COIP. La educación vial tradicional memorística no prepara para dilemas cotidianos. 
+- Aplicación: https://g8-vial-834435723683.us-central1.run.app/
+- Estado: https://g8-vial-834435723683.us-central1.run.app/health
+- Plataforma: Google Cloud Run
+- Servicio: `g8-vial`
+- Región: `us-central1`
+- Arranque en frío medido durante el taller: 12 s
 
-**Vía Segura** presenta dilemas viales situacionales generados por IA a partir de una tabla canónica oficial, evalúa las decisiones del usuario de forma 100% determinista y entrega retroalimentación formativa con el cálculo exacto de la multa y la cita del artículo legal correspondiente.
+## Arquitectura
 
----
+```text
+[Frontend React]
+       |
+       v
+[FastAPI en Cloud Run]
+       |
+       +-- POST /chat ------> [Groq] ------> [Agente y herramientas]
+       |                                           |
+       |                                           +-- RAG normativo
+       |                                           +-- Identificación COIP
+       |                                           +-- Cálculo de sanción
+       |                                           +-- Verificación de cita
+       |
+       +-- POST /escenarios -> [LLM + validación Pydantic]
+       +-- POST /evaluaciones -> [Reglas deterministas]
 
-## 3. Estado del Proyecto y Despliegue
-- **Fase Actual:** Semanas 1, 2 y 3 (MVP, integración con IA Generativa y sistema RAG normativo completados al 100%)
-- **Estado de Pruebas:** 67 pruebas automatizadas pasando con éxito (`pytest`), flujo CI en `.github/workflows/ci.yml` y evaluación RAG dual con `Hit@1 = 87.5%` y `Hit@5 = 100.0%` tanto en el banco base (`eval/preguntas.json`) como en el banco independiente (`eval/preguntas_finales.json`)
-- **URL Local del Backend + Frontend:** `http://127.0.0.1:8000/` (FastAPI sirve el build compilado de React)
-- **Documentación Interactiva Swagger / OpenAPI:** `http://127.0.0.1:8000/docs`
-- **Endpoints de la Semana 3:** `POST /chat` (Asistente RAG con agente de alcance controlado) y `GET /rag/buscar` (Buscador semántico en ChromaDB)
-- **Despliegue en la Nube:** Programado para la Semana 4 (Render / Railway)
-
----
-
-## 4. Arquitectura y Flujo de una Consulta
-La arquitectura sigue el principio fundamental: **«El modelo propone, el código dispone»**.
-
-```
-[Usuario / Frontend React]
-       │
-       ▼ (1) POST /escenarios
-[FastAPI / Limitador Token Bucket (429)]
-       │
-       ▼ (2) Prompt R.E.C.E.T.A. + Contravenciones Canónicas
-[ClienteLLM: Gemini-3.8-flash (Respaldo: Groq)]
-       │
-       ▼ (3) Salida JSON Pydantic (extra="forbid")
-[Validador Cruzado Determinista contra data/raw/contravenciones_lotttsv.json]
-       │
-       ▼ (4) Retorna EscenarioPublico (Respuesta correcta OCULTA)
-[Usuario selecciona opción A, B, C o D]
-       │
-       ▼ (5) POST /evaluaciones
-[Evaluador y Calculador Python con Decimal y SBU de config/parametros.json]
-       │
-       ▼ (6) Retroalimentación con Multa en USD y Cita al Artículo del COIP
+Respaldo del modelo: proveedor simulado local.
+Base de conocimiento: 641 fragmentos incluidos en la imagen del contenedor.
 ```
 
----
+El modelo propone y las reglas en Python validan, calculan y verifican las decisiones críticas.
 
-## 5. Base de Conocimiento y Fuentes Oficiales
-1. **Código Orgánico Integral Penal (COIP):** Arts. 383 a 392 (Contravenciones de 1.ª a 7.ª clase). Registro Oficial Suplemento 180, con reformas consolidadas vigentes a 2026.
-2. **Ley Orgánica de Transporte Terrestre, Tránsito y Seguridad Vial (LOTTTSV):** Registro Oficial Suplemento 398 de 07-ago-2008 y Ley Reformatoria (R.O. Suplemento 512 de 10-ago-2021).
-3. **Reglamento General a la LOTTTSV:** Registro Oficial Suplemento 731 de 25-jun-2012.
-4. **Tabla Canónica y Documentación COIP:** `data/raw/contravenciones_lotttsv.json` (90 contravenciones verificadas del COIP Arts. 386–392), documentada en `docs/tabla-coip.md` y `docs/tabla_contravenciones.csv`, es la única fuente de verdad estructurada para sanciones.
-5. **Vigencia y Actualización:** El Salario Básico Unificado (SBU 2026: $482.00 USD) se actualiza de forma externa en `config/parametros.json` sin alterar el código ni el prompt.
+## Cómo ejecutarlo en local
 
----
+Requisitos: Python 3.11 o 3.12. Node.js solo es necesario para modificar el frontend.
 
-## 6. Herramientas Deterministas del Agente y RAG (Semana 3)
-Toda decisión crítica, cálculo financiero, validación jurídica y búsqueda normativa se ejecuta en código determinista probado, **NUNCA por el LLM**:
-- `validar_escenario(esc, perfil, dificultad)`: Verifica que la contravención generada por el LLM exista en la tabla oficial y aplique al perfil. Si no coincide, descarta el escenario y solicita regeneración.
-- `calcular_sancion(contravencion)`: Lee el SBU de `config/parametros.json` ($482.00 USD) y calcula la multa en USD con precisión `Decimal` (`ROUND_HALF_UP`) y la reducción de puntos de licencia según el COIP y la reforma del RO 512.
-- `evaluar_respuesta(esc, contravencion, respuesta)`: Compara la opción elegida por el usuario contra la respuesta correcta verificada y genera el resultado pedagógico.
-- `consultar_normativa(pregunta)` / `ServicioRAG`: Busca en **ChromaDB** (`intfloat/multilingual-e5-small`) con pre-filtro `where={"vigente": True}`, umbral de distancia coseno ($d \le 0.45$) y verificación obligatoria de cita textual.
-- `agente_controlado`: Agente en `app/services/agente.py` con tope estricto de 6 vueltas, lista blanca de herramientas y bloqueo pedagógico de acciones fuera de alcance (ej. *"borrar multa"*).
-
----
-
-## 7. Instalación y Puesta en Marcha Local
-
-### Prerrequisitos
-- Python 3.11 o 3.12
-- Node.js 18+ y npm (opcional, ya que el build de React se incluye compilado)
-
-### Paso 1: Clonar y configurar entorno virtual
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/edudigital2019/simulador-situaciones-viales.git
 cd simulador-situaciones-viales
-
-# Crear y activar entorno virtual
 python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# Linux / macOS:
-source .venv/bin/activate
 ```
 
-### Paso 2: Instalar dependencias
+Activación en Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+Copy-Item .env.example .env
+```
+
+Activación en Linux o macOS:
+
+```bash
+source .venv/bin/activate
+cp .env.example .env
+```
+
+Después de completar las variables necesarias en `.env`:
+
 ```bash
 pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Paso 3: Configurar variables de entorno
+La aplicación queda disponible en `http://127.0.0.1:8000/` y Swagger en `http://127.0.0.1:8000/docs`.
+
+## Variables de entorno
+
+La plantilla completa está en `.env.example`. El archivo `.env` y las claves reales nunca se suben al repositorio.
+
+| Variable | Uso |
+|---|---|
+| `LLM_PRINCIPAL` | `gemini`, `groq` o `simulado` |
+| `LLM_RESPALDO` | Proveedor alternativo |
+| `GEMINI_API_KEY` | Clave de Gemini, si se utiliza |
+| `GROQ_API_KEY` | Clave de Groq, si se utiliza |
+| `GROQ_MODEL` | Modelo principal de Groq |
+| `LLM_TIMEOUT_S` | Tiempo máximo por llamada |
+| `LLM_MAX_TOKENS` | Máximo de tokens de salida |
+| `LLM_REINTENTOS` | Reintentos ante errores transitorios |
+
+En Cloud Run las claves se configuran como variables protegidas del servicio. GitHub Actions utiliza `GCP_PROJECT_ID` y `GCP_SA_KEY` como secretos del repositorio; sus valores no aparecen en el workflow.
+
+## Despliegue
+
+Despliegue manual equivalente:
+
 ```bash
-# Copiar plantilla
-cp .env.example .env     # Windows: copy .env.example .env
+gcloud run deploy g8-vial \
+  --source . \
+  --region us-central1 \
+  --memory 2Gi \
+  --min-instances 0 \
+  --max-instances 1 \
+  --allow-unauthenticated
 ```
-Edite `.env` y configure sus claves de API gratuitas:
-- **Gemini:** [Google AI Studio](https://aistudio.google.com/apikey)
-- **Groq:** [Groq Console](https://console.groq.com/keys)
-*(O use `LLM_PRINCIPAL=simulado` para operar en modo offline sin conexión).*
 
-### Paso 4: Ejecutar la aplicación
+El despliegue habitual lo realiza `.github/workflows/ci-cd.yml` después de que las pruebas terminan correctamente. La publicación automática desde `master` se habilita con la variable de GitHub `HABILITAR_DESPLIEGUE=true`.
+
+- Corrida verde registrada por el taller: https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/42325256229
+- Decisión de despliegue: [`docs/adr/ADR-0003-despliegue.md`](docs/adr/ADR-0003-despliegue.md)
+
+## Datos en producción
+
+| Dato | Dónde vive |
+|---|---|
+| Índice del RAG y vectores | Dentro de la imagen, solo lectura |
+| Documentos normativos | Dentro de la imagen, solo lectura |
+| Configuración y prompts | Dentro de la imagen, solo lectura |
+| Historial de conversaciones | No se almacena |
+| Escenarios temporales | Memoria de la instancia; se pierden al reiniciar |
+| Archivos subidos por usuarios | No existen en este proyecto |
+| Métricas de llamadas al modelo | Cloud Logging y archivo efímero del contenedor |
+
+Se acepta perder los escenarios temporales porque el proyecto es una demostración educativa y puede generarlos nuevamente. Los documentos normativos y el índice RAG se distribuyen con cada revisión del contenedor.
+
+## Pruebas y evaluación
+
 ```bash
-uvicorn app.main:app --reload
+# 72 pruebas unitarias y de integración con proveedor simulado
+python -m pytest -q
+
+# Evaluación del RAG
+python eval/run_eval.py
+
+# Pruebas funcionales contra Cloud Run
+python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/
 ```
-Abra su navegador en:
-- **Aplicación Web Interactiva:** `http://127.0.0.1:8000/`
-- **Documentación Swagger API:** `http://127.0.0.1:8000/docs`
 
----
+El taller registró `6/6` pruebas funcionales aprobadas, con p95 de 49.2 s, en la corrida enlazada en la sección de despliegue. Antes del cierre, la salida exacta de esa corrida debe copiarse en [`docs/evidencias/semana-4/pruebas-humo.md`](docs/evidencias/semana-4/pruebas-humo.md). La evaluación del RAG está en [`docs/07-evaluacion.md`](docs/07-evaluacion.md).
 
-## 8. Variables de Entorno Requeridas (`.env.example`)
-Las credenciales residen estrictamente en variables de entorno (OWASP LLM07); ninguna clave toca el repositorio:
+## Integración estable con el modelo
 
-| Variable | Propósito | Valor por Defecto |
+| Control | Estado | Dónde |
 |---|---|---|
-| `LLM_PRINCIPAL` | Proveedor primario de IA (`gemini`, `groq`, `simulado`) | `gemini` |
-| `LLM_RESPALDO` | Proveedor secundario de contingencia ante caídas o 429 | `groq` |
-| `GEMINI_API_KEY` | Clave API gratuita de Google Gemini | *(Secreta en .env)* |
-| `GEMINI_MODEL` | Identificador del modelo Gemini | `gemini-3.8-flash` |
-| `GROQ_API_KEY` | Clave API gratuita de Groq | *(Secreta en .env)* |
-| `GROQ_MODEL` | Identificador del modelo en Groq | `openai/gpt-oss-20b` |
-| `LLM_TIMEOUT_S` | Tiempo límite de espera en segundos por llamada | `30` |
-| `LLM_MAX_TOKENS` | Longitud máxima de respuesta en tokens | `2048` |
-| `LLM_REINTENTOS` | Número de reintentos con espera exponencial ante 429 | `3` |
-| `LLM_RAZONAMIENTO` | Nivel de razonamiento del modelo (`low`, `medium`, `high`) | `low` |
+| Tiempo límite por llamada | Sí | `app/services/llm.py` |
+| Reintentos con espera creciente ante 429 o 5xx | Sí | `app/services/llm.py` |
+| Proveedor o modelo de respaldo | Sí | `app/config.py` |
+| Límite de peticiones por usuario o IP | Parcial | `app/main.py` |
+| Tope de entrada y tokens de salida | Sí | `app/schemas.py`, `app/config.py` |
+| Mensaje claro cuando el modelo falla | Sí | `app/main.py` |
+| Manejo del arranque en frío | Parcial | `tests/smoke.py` |
+| Logs sin preguntas, datos personales ni claves | Sí | `app/services/llm.py` |
 
----
+La conmutación se comprobó configurando temporalmente un modelo inexistente. Groq respondió 404 y el proveedor simulado contestó correctamente en 17 ms, sin mostrar una traza ni devolver un error 500 al usuario. Después de la prueba se restauró `openai/gpt-oss-20b`.
 
-## 9. Ejecución de Pruebas Automatizadas
-La suite de pruebas automatizadas se ejecuta sin consumir cuota de API mediante dobles de prueba (mocks):
+## Decisiones y riesgos
 
-```bash
-# Ejecutar todas las 63 pruebas unitarias e integrales (incluye RAG y Agente)
-python -m pytest -v
+- [Arquitectura](docs/03-arquitectura.md)
+- [Fuentes normativas](docs/04-fuentes.md)
+- [ADR de despliegue](docs/adr/ADR-0003-despliegue.md)
+- [Riesgos y mitigaciones](docs/riesgos.md)
 
-# Evaluación del sistema RAG con métricas de acierto Hit@1, Hit@5 y Regla de Silencio
-python scripts/evaluar_rag.py
+## Limitaciones conocidas
 
-# Demostración del manejo de límites de tasa 429 en vivo
-python scripts/demo_429.py
-```
+- El respaldo de producción es el proveedor simulado local, no un segundo proveedor externo.
+- `/chat` limita la entrada a 500 caracteres, pero todavía no aplica un límite de peticiones por usuario.
+- El limitador de tasa y los escenarios viven en memoria y no se comparten entre varias instancias.
+- Cloud Run puede presentar un arranque en frío cuando escala desde cero.
+- El contenido es educativo y no reemplaza una fuente oficial ni asesoría jurídica.
 
----
+## Integrantes y responsabilidades
 
-## 10. Resultados de Evaluación de Prompts (Semana 2)
-Comparación de las tres versiones del prompt con las 10 entradas de `eval/entradas_prompts.csv` (detallada en `docs/05-prompts.md`):
+- **Fausto Cando:** arquitectura, backend, configuración de FastAPI, cliente LLM y pruebas con mocks.
+- **Isidoro Guaman:** base normativa, tabla canónica, prompts y evaluación del RAG.
+- **Luis Naranjo:** frontend, documentación y evidencias del proyecto.
 
-| Criterio Evaluado | `system_v1.md` (Zero-Shot) | `system_v2.md` (Reglas) | `system_v3.md` (R.E.C.E.T.A.) |
-|---|---|---|---|
-| **Estructura y Esquema Pydantic** | 60% (fallos de clave) | 90% | **100% válido** |
-| **Cero Alucinación de Multas/Puntos** | 40% (calculó en texto) | 80% | **100% (cero cálculo por LLM)** |
-| **Bloqueo de Inyección y Evasión** | 0% (obedeció jailbreak) | 50% | **100% bloqueado** |
-| **Abstención Fuera de Dominio** | 0% (inventó datos) | 50% | **100% abstención con `FALTA`** |
-| **Versión Ganadora** | Descartada | Descartada | **Seleccionada para producción** |
+## Uso de IA durante el desarrollo
 
----
-
-## 11. Limitaciones Conocidas y Trabajo Futuro
-- **Semana 2 (Implementado):** Generación de dilemas viales con validación cruzada contra las 90 contravenciones estructuradas del COIP (`data/raw/contravenciones_lotttsv.json` y `docs/tabla-coip.md`).
-- **Semana 3 (Implementado):** Base vectorial **ChromaDB** persistente (`intfloat/multilingual-e5-small`) con pre-filtrado de metadatos (`vigente=True`), corte por artículo legal (641 fragmentos indexados, 0 huérfanos), cita verificada obligatoria, umbral de distancia coseno, detección de documentos envenenados, agente ReAct acotado (tope 6 vueltas) y pipeline de automatización en 4 estaciones en el endpoint `POST /chat` y panel React.
-- **Límite de Tasa en Memoria:** El limitador Token Bucket actual opera en memoria local de la instancia; para despliegues distribuidos multi-instancia en la Semana 4 se recomienda almacenamiento compartido tipo Redis.
-
----
-
-## 12. Consideraciones Éticas y Protección de Datos Personales
-- **Cumplimiento LOPDP (Ecuador):** El sistema opera bajo el principio de minimización de datos. No se solicita, procesa ni almacena ningún dato de carácter personal identificable (PII). Las sesiones se identifican mediante identificadores anónimos generados en el navegador (`crypto.randomUUID()`).
-- **Límites Éticos:** El sistema no asesora en juicios ni sugiere atenuantes para evadir la justicia. Ante cualquier consulta de evasión de fotorradares, el sistema rechaza la solicitud y redirige a la conducción responsable.
-- **Aviso Educativo Obligatorio:** Se muestra al usuario la advertencia permanente de que el simulador es un recurso pedagógico que no reemplaza a las fuentes normativas oficiales de la ANT.
-
----
-
-## 13. Declaración de Uso de IA y Aportes del Equipo
-
-### Declaración de Uso de IA Generativa en el Desarrollo
-- **Herramientas utilizadas:** Claude Opus 5.5, Gemini 3.8 Flash y Antigravity AI Assistant.
-- **Usos:** Generación de borradores de esquemas Pydantic, construcción de plantillas de prueba en pytest, redacción inicial de documentación técnica y diseño de interfaces con Tailwind CSS.
-- **Verificación:** Todo el código generado fue revisado línea por línea, contrastado con el Código Orgánico Integral Penal vigente y validado contra una suite automatizada de 63 pruebas que pasan al 100% y evaluación RAG con 20 casos de prueba. Las fuentes normativas fueron verificadas directamente en los repositorios oficiales de la ANT y Registro Oficial.
-
-### Aporte por Integrante del Equipo
-- **Fausto Cando (Arquitectura y Backend):** Configuración del servicio FastAPI, esquemas Pydantic estrictos, cliente LLM desacoplado, limitador Token Bucket y pruebas con mocks.
-- **Isidoro Guaman (Base Canónica y Prompts):** Extracción y estructuración de las contravenciones del COIP, diseño y comparativa experimental de los prompts v1, v2 y v3 bajo el método R.E.C.E.T.A.
-- **Luis Naranjo (Frontend y Documentación):** Desarrollo de la interfaz de usuario en React/TypeScript con máquina de estados estricta, manejo de cuenta regresiva 429, redacción de `docs/01-05.md` y evidencias semanales.
+Se utilizaron herramientas de IA generativa para apoyar borradores de esquemas, pruebas, documentación e interfaz. El equipo revisó los resultados, contrastó la información normativa y ejecutó las pruebas automatizadas antes de publicar los cambios.
