@@ -45,7 +45,7 @@ CASOS = [
         "ruta": "/chat",
         "cuerpo": {"pregunta": "¿Cuáles son los ingredientes para preparar fanesca?"},
         "estado": 200,
-        "contiene": "Agencia Nacional de Tránsito",
+        "contiene": "Solo puedo responder consultas relacionadas con normativa",
     },
     {
         "tipo": "inyeccion",
