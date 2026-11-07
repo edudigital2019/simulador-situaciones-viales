@@ -207,33 +207,101 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
 
         def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
             self.llamadas += 1
-            roles = [m["role"] for m in mensajes]
-            if "tool" not in roles:
+            ejecutadas = [m["name"] for m in mensajes if m["role"] == "tool"]
+            if "buscar_normativa_rag" not in ejecutadas:
                 tc = SimpleNamespace(
-                    id="call_mock_calc_1",
+                    id="call_mock_rag_1",
                     function=SimpleNamespace(
-                        name="calcular_sancion",
-                        arguments=json.dumps({"id_contravencion": "C-389-01"}),
+                        name="buscar_normativa_rag",
+                        arguments=json.dumps({"consulta": "Semáforo en rojo", "top_k": 5}),
                     ),
                 )
                 msg = SimpleNamespace(content=None, tool_calls=[tc])
                 return msg, "mock", "modelo-mock", 10, 1
-            ultimo_tool = [m for m in mensajes if m["role"] == "tool"][-1]
-            datos_tool = json.loads(ultimo_tool["content"])
-            msg_final = SimpleNamespace(
-                content=f"Respuesta sintetizada tras tool: multa ${datos_tool['multa_usd']:.2f} USD",
-                tool_calls=None,
+
+            if "identificar_contravencion_coip" not in ejecutadas:
+                nombre = "identificar_contravencion_coip"
+                argumentos = {"consulta": "Semáforo en rojo", "articulo_recuperado": "389"}
+            elif "calcular_sancion" not in ejecutadas:
+                nombre = "calcular_sancion"
+                argumentos = {"id_contravencion": "C-389-01"}
+            elif "verificar_cita_y_seguridad" not in ejecutadas:
+                nombre = "verificar_cita_y_seguridad"
+                argumentos = {"articulo": "389", "articulos_recuperados": ["389"]}
+            else:
+                msg_final = SimpleNamespace(
+                    content="Respuesta sintetizada tras herramientas",
+                    tool_calls=None,
+                )
+                return msg_final, "mock", "modelo-mock", 12, 1
+
+            tc = SimpleNamespace(
+                id=f"call_mock_{self.llamadas}",
+                function=SimpleNamespace(name=nombre, arguments=json.dumps(argumentos)),
             )
-            return msg_final, "mock", "modelo-mock", 12, 1
+            msg = SimpleNamespace(content=None, tool_calls=[tc])
+            return msg, "mock", "modelo-mock", 10, 1
 
     mock_llm = ClienteLLMMockToolCalling()
     res = ejecutar_agente_consulta("Semáforo en rojo", cliente_llm=mock_llm)
-    assert mock_llm.llamadas == 2
+    assert mock_llm.llamadas == 5
     assert "144.60 USD" in res["respuesta"]
     mensajes_traza = res["agente"]["mensajes"]
     assert any(m["role"] == "assistant" and m.get("tool_calls") for m in mensajes_traza)
     msgs_tool = [m for m in mensajes_traza if m["role"] == "tool"]
-    assert len(msgs_tool) == 1
-    assert msgs_tool[0]["tool_call_id"] == "call_mock_calc_1"
-    assert msgs_tool[0]["name"] == "calcular_sancion"
+    assert len(msgs_tool) == 4
+    assert msgs_tool[0]["tool_call_id"] == "call_mock_rag_1"
+    assert msgs_tool[0]["name"] == "buscar_normativa_rag"
+
+
+def test_agente_no_acepta_respuesta_directa_sin_consultar_herramientas():
+    from types import SimpleNamespace
+    from app.services.agente import ejecutar_agente_consulta
+
+    class ClienteQueRespondeDirecto:
+        def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
+            return (
+                SimpleNamespace(content="Respuesta sin consultar normativa", tool_calls=None),
+                "mock",
+                "modelo-mock",
+                5,
+                1,
+            )
+
+    res = ejecutar_agente_consulta(
+        "¿Cuáles son los ingredientes para preparar fanesca?",
+        cliente_llm=ClienteQueRespondeDirecto(),
+    )
+
+    assert res["abstencion"] is True
+    assert "Agencia Nacional de Tránsito" in res["respuesta"]
+    assert any(m.get("name") == "buscar_normativa_rag" for m in res["agente"]["mensajes"])
+
+
+def test_agente_maneja_argumentos_invalidos_sin_error_interno():
+    from types import SimpleNamespace
+    from app.services.agente import ejecutar_agente_consulta
+
+    class ClienteConArgumentosInvalidos:
+        def __init__(self):
+            self.primera = True
+
+        def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
+            if self.primera:
+                self.primera = False
+                llamada = SimpleNamespace(
+                    id="call_invalida",
+                    function=SimpleNamespace(name="buscar_normativa_rag", arguments="{}"),
+                )
+                return SimpleNamespace(content=None, tool_calls=[llamada]), "mock", "modelo-mock", 5, 1
+            return SimpleNamespace(content="Respuesta directa", tool_calls=None), "mock", "modelo-mock", 5, 1
+
+    res = ejecutar_agente_consulta(
+        "¿Qué sanción aplica por cruzar un semáforo en rojo?",
+        cliente_llm=ClienteConArgumentosInvalidos(),
+    )
+
+    assert res["tipo"] in {"con_fuente", "silencio"}
+    assert res["respuesta"]
+    assert any("Argumentos inválidos" in b["detalle"] for b in res["agente"]["bitacora"])
 

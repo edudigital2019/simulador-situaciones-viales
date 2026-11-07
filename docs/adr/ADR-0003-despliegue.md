@@ -1,12 +1,17 @@
 # ADR-0003: Despliegue y almacenamiento de datos
 
 ## Estado
-Propuesto. Validado localmente con Docker; pendiente de despliegue público.
+Aceptado. Validado localmente con Docker y desplegado manualmente en Cloud Run.
 
 ## Decisión
 Desplegar el simulador de situaciones viales en Google Cloud Run
 mediante una imagen Docker que incluya el backend FastAPI,
 el frontend React compilado, el modelo de embeddings y el índice del RAG.
+
+- Proyecto: `simulador-vial-g8`
+- Servicio: `g8-vial`
+- Región: `us-central1`
+- URL pública: `https://g8-vial-834435723683.us-central1.run.app/`
 
 ## Datos en producción
 
@@ -26,13 +31,13 @@ el frontend React compilado, el modelo de embeddings y el índice del RAG.
 
 El flujo `.github/workflows/ci-cd.yml` revisa secretos y ejecuta las pruebas, la evaluación del RAG y la compilación del frontend en cada push y pull request. Durante las pruebas utiliza el proveedor simulado, sin consumir claves ni cuota de los modelos reales.
 
-Al actualizar `master`, el despliegue en Cloud Run solo empieza si el job `pruebas` termina correctamente y la variable `HABILITAR_DESPLIEGUE` del repositorio tiene el valor `true`. Mientras se preparan las credenciales y la infraestructura, el job queda omitido sin afectar la validación de CI.
+Al actualizar `master` o ejecutar manualmente el workflow, el despliegue en Cloud Run solo empieza si el job `pruebas` termina correctamente y la variable `HABILITAR_DESPLIEGUE` del repositorio tiene el valor `true`. Mientras se preparan las credenciales y la infraestructura, el job queda omitido sin afectar la validación de CI.
 
 El repositorio necesita estos secretos en GitHub:
 
 - `GCP_PROJECT_ID`: identificador del proyecto de Google Cloud.
 - `GCP_SA_KEY`: credenciales JSON de la cuenta de servicio usada por GitHub Actions.
 
-En Secret Manager deben existir `gemini-api-key` y `groq-api-key`, con acceso para la cuenta que ejecuta el servicio de Cloud Run.
+La cuenta de servicio debe tener permisos para construir la imagen y actualizar el servicio de Cloud Run. Las claves de Gemini y Groq permanecen en la configuración protegida de `g8-vial`; no se incluyen en GitHub ni en la imagen.
 
-La imagen se publica en un repositorio Docker de Artifact Registry llamado `via-segura`, ubicado en `us-central1`.
+Después del despliegue, el pipeline obtiene la URL pública de Cloud Run y ejecuta `tests/smoke.py`. Estas pruebas validan `/health`, dos consultas normativas, la abstención fuera de dominio, la resistencia a una inyección y el rechazo de una entrada inválida.

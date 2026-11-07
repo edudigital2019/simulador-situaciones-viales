@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.parametros import cargar_parametros
 from app.services.rag import (
@@ -579,7 +579,16 @@ def ejecutar_agente_consulta(
         msg_modelo = _solicitar_paso_modelo(pregunta, mensajes, ctx, cliente_llm=cliente_llm)
 
         if not msg_modelo.tool_calls:
-            respuesta_final_modelo = msg_modelo.content or _sintetizar_respuesta_final(pregunta, ctx)
+            paso_obligatorio = _planificador_modelo_tool_calling(pregunta, mensajes, ctx)
+            if paso_obligatorio.tool_calls:
+                msg_modelo = paso_obligatorio
+            else:
+                respuesta_final_modelo = _sintetizar_respuesta_final(pregunta, ctx)
+                mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
+                break
+
+        if not msg_modelo.tool_calls:
+            respuesta_final_modelo = _sintetizar_respuesta_final(pregunta, ctx)
             mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
             break
 
@@ -662,6 +671,11 @@ def ejecutar_agente_consulta(
                     },
                     "aviso": parametros["aviso_educativo"],
                 }
+            except (ValidationError, ValueError, TypeError) as error:
+                resultado_tool = {
+                    "ok": False,
+                    "error": f"Argumentos inválidos para {nombre_fn}: {error}",
+                }
 
             mensajes.append({
                 "role": "tool",
@@ -670,7 +684,11 @@ def ejecutar_agente_consulta(
                 "content": json.dumps(resultado_tool, ensure_ascii=False),
             })
 
-            detalle_paso = _formatear_detalle_bitacora(nombre_fn, resultado_tool)
+            detalle_paso = (
+                resultado_tool["error"]
+                if resultado_tool.get("ok") is False
+                else _formatear_detalle_bitacora(nombre_fn, resultado_tool)
+            )
             fase_paso = (
                 "Verificar (Cierre del bucle)"
                 if nombre_fn == "verificar_cita_y_seguridad"
