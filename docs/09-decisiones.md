@@ -54,3 +54,10 @@ El pipeline ejecuta pruebas, evaluación RAG y compilación antes de desplegar. 
 ## 10. Uso de IA generativa y responsabilidad humana
 
 La IA apoyó borradores, pruebas, documentación e interfaz. No se aceptaron resultados sin revisión: el equipo contrastó normativa, corrigió el corpus, mantuvo la tabla canónica y ejecutó pruebas automáticas. La responsabilidad final de las reglas de negocio y de la entrega corresponde al equipo.
+
+## 11. Confirmación humana con efecto real
+
+**Decisión:** una respuesta normativa con sanción crea una acción pendiente asociada a la sesión. El backend no registra la consulta hasta recibir una petición explícita de confirmación; al descartar, el progreso permanece intacto.  
+**Controles:** la acción solo puede resolverse desde la misma sesión y la operación es idempotente, por lo que repetir la confirmación no duplica el registro.  
+**Separación de métricas:** una consulta confirmada no se cuenta como acierto, fallo, multa ni pérdida real de puntos; incrementa `consultas_confirmadas` y conserva el último artículo consultado.  
+**Razón:** demuestra intervención humana efectiva sin presentar una consulta educativa como una sanción o evaluación real.

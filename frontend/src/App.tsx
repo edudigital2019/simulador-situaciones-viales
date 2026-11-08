@@ -103,6 +103,13 @@ interface RespuestaChatRAG {
     confianza: number;
     estaciones: { estacion: string; actor: string; resultado: string; confianza?: number }[];
   };
+  accion_pendiente?: {
+    id_accion: string;
+    tipo: 'registrar_consulta_progreso';
+    estado: 'pendiente';
+    descripcion: string;
+    articulo: string;
+  } | null;
   aviso: string;
 }
 
@@ -211,6 +218,7 @@ export default function App() {
   const [cargandoChat, setCargandoChat] = useState<boolean>(false);
   const [respuestaChat, setRespuestaChat] = useState<RespuestaChatRAG | null>(null);
   const [confirmacionHumana, setConfirmacionHumana] = useState<'pendiente' | 'confirmada' | 'descartada'>('pendiente');
+  const [procesandoConfirmacion, setProcesandoConfirmacion] = useState<boolean>(false);
 
   const [estadisticas, setEstadisticas] = useState({ total: 0, aciertos: 0, multasAcumuladasUSD: 0, puntosPerdidos: 0 });
 
@@ -326,10 +334,11 @@ export default function App() {
     setCargandoChat(true);
     setMensajeError('');
     setConfirmacionHumana('pendiente');
+    const sid = obtenerSessionId();
     try {
       const res = await fetch('/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Session-ID': sid },
         body: JSON.stringify({
           pregunta: q,
           incluir_documento_envenenado_demo: env,
@@ -347,6 +356,30 @@ export default function App() {
       setMensajeError('Error de conexión al consultar la normativa.');
     } finally {
       setCargandoChat(false);
+    }
+  };
+
+  const resolverConfirmacionChat = async (decision: 'confirmar' | 'descartar') => {
+    const accion = respuestaChat?.accion_pendiente;
+    if (!accion || procesandoConfirmacion) return;
+
+    setProcesandoConfirmacion(true);
+    setMensajeError('');
+    try {
+      const res = await fetch(`/chat/acciones/${accion.id_accion}/${decision}`, {
+        method: 'POST',
+        headers: { 'X-Session-ID': obtenerSessionId() },
+      });
+      const datos = await res.json().catch(() => null);
+      if (!res.ok) {
+        setMensajeError(datos?.detail || 'No se pudo resolver la acción pendiente.');
+        return;
+      }
+      setConfirmacionHumana(datos.estado === 'confirmada' ? 'confirmada' : 'descartada');
+    } catch {
+      setMensajeError('Error de conexión al resolver la acción pendiente.');
+    } finally {
+      setProcesandoConfirmacion(false);
     }
   };
 
@@ -1042,8 +1075,8 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Confirmación humana clara (solo cuando no es regla de silencio) */}
-                {respuestaChat.tipo !== 'silencio' && (
+                {/* Acción real: permanece pendiente en servidor hasta confirmar o descartar. */}
+                {respuestaChat.accion_pendiente && (
                   <div style={{
                     background: confirmacionHumana === 'confirmada'
                       ? 'rgba(16, 185, 129, 0.08)'
@@ -1066,15 +1099,16 @@ export default function App() {
                     gap: '1rem',
                   }}>
                     <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#f8fafc' }}>
-                      {confirmacionHumana === 'pendiente' && 'Confirmar acción: el asistente necesita tu aprobación para continuar.'}
-                      {confirmacionHumana === 'confirmada' && 'Acción aprobada.'}
-                      {confirmacionHumana === 'descartada' && 'Acción descartada.'}
+                      {confirmacionHumana === 'pendiente' && respuestaChat.accion_pendiente.descripcion}
+                      {confirmacionHumana === 'confirmada' && `Consulta registrada en el progreso: ${respuestaChat.accion_pendiente.articulo}.`}
+                      {confirmacionHumana === 'descartada' && 'Acción descartada: el progreso no fue modificado.'}
                     </div>
 
                     {confirmacionHumana === 'pendiente' ? (
                       <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
                         <button
-                          onClick={() => setConfirmacionHumana('confirmada')}
+                          onClick={() => resolverConfirmacionChat('confirmar')}
+                          disabled={procesandoConfirmacion}
                           className="btn-island"
                           style={{
                             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -1083,13 +1117,14 @@ export default function App() {
                             fontSize: '0.84rem',
                           }}
                         >
-                          <span>Confirmar</span>
+                          <span>{procesandoConfirmacion ? 'Procesando…' : 'Confirmar y registrar'}</span>
                           <span className="btn-icon-wrap" style={{ color: '#fff', width: '26px', height: '26px' }}>
                             <IconArrowUpRight />
                           </span>
                         </button>
                         <button
-                          onClick={() => setConfirmacionHumana('descartada')}
+                          onClick={() => resolverConfirmacionChat('descartar')}
+                          disabled={procesandoConfirmacion}
                           style={{
                             background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.14)',

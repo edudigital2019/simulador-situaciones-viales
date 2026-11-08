@@ -148,6 +148,8 @@ class ProgresoUsuario(Estricto):
     fallos: int = 0
     multas_acumuladas_usd: float = 0.0
     puntos_perdidos: float = 0.0
+    consultas_confirmadas: int = 0
+    ultima_consulta_articulo: str | None = None
     dificultad_sugerida: Dificultad = "baja"
     historial: list[bool] = Field(default_factory=list)
 

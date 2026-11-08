@@ -2,7 +2,19 @@ import json as _json
 
 import pytest
 
-from app.main import Problema, _problema, app, chat_normativo, crear_escenario, evaluar, health, obtener_llm, progreso
+from app.main import (
+    Problema,
+    _problema,
+    app,
+    chat_normativo,
+    confirmar_accion_chat,
+    crear_escenario,
+    descartar_accion_chat,
+    evaluar,
+    health,
+    obtener_llm,
+    progreso,
+)
 from app.schemas import EscenarioVialSchema, OpcionEscenario, SolicitudChat, SolicitudEscenario, SolicitudEvaluacion
 from app.services.llm import ProveedorNoDisponible, Resultado
 
@@ -185,3 +197,50 @@ def test_chat_aplica_limite_de_tasa_y_retry_after(monkeypatch):
 
     assert capturado.value.estado == 429
     assert capturado.value.cabeceras == {"Retry-After": "12"}
+
+
+def _respuesta_chat_con_sancion():
+    return {
+        "pregunta": "¿Cuál es la sanción?",
+        "abstencion": False,
+        "tipo": "con_fuente",
+        "respuesta": "Aplica el Art. 389.",
+        "sancion_calculada": {"articulo": "Art. 389", "multa_usd": 144.60},
+    }
+
+
+def test_confirmacion_humana_no_ejecuta_antes_de_aprobar_y_es_idempotente(monkeypatch):
+    sesion = "confirmacion-real-test-01"
+    monkeypatch.setattr("app.main.ejecutar_agente_consulta", lambda *args, **kwargs: _respuesta_chat_con_sancion())
+
+    antes = progreso(sesion=sesion)
+    respuesta = chat_normativo(SolicitudChat(pregunta="¿Cuál es la sanción?"), sesion=sesion, llm=object())
+    accion = respuesta["accion_pendiente"]
+
+    assert accion["estado"] == "pendiente"
+    assert progreso(sesion=sesion).consultas_confirmadas == antes.consultas_confirmadas == 0
+
+    primera = confirmar_accion_chat(accion["id_accion"], sesion=sesion)
+    segunda = confirmar_accion_chat(accion["id_accion"], sesion=sesion)
+
+    assert primera["estado"] == segunda["estado"] == "confirmada"
+    assert primera["progreso"]["consultas_confirmadas"] == 1
+    assert progreso(sesion=sesion).consultas_confirmadas == 1
+    assert progreso(sesion=sesion).total_evaluados == 0
+
+
+def test_descartar_accion_no_modifica_progreso_y_aisla_sesiones(monkeypatch):
+    sesion = "confirmacion-real-test-02"
+    monkeypatch.setattr("app.main.ejecutar_agente_consulta", lambda *args, **kwargs: _respuesta_chat_con_sancion())
+    respuesta = chat_normativo(SolicitudChat(pregunta="¿Cuál es la sanción?"), sesion=sesion, llm=object())
+    accion_id = respuesta["accion_pendiente"]["id_accion"]
+
+    with pytest.raises(Problema) as ajena:
+        confirmar_accion_chat(accion_id, sesion="otra-sesion")
+    assert ajena.value.estado == 404
+
+    descartada = descartar_accion_chat(accion_id, sesion=sesion)
+    confirmacion_tardia = confirmar_accion_chat(accion_id, sesion=sesion)
+
+    assert descartada["estado"] == confirmacion_tardia["estado"] == "descartada"
+    assert progreso(sesion=sesion).consultas_confirmadas == 0

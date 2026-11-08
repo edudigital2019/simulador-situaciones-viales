@@ -41,5 +41,13 @@ def obtener_progreso(usuario_id: str) -> ProgresoUsuario:
     return _PROGRESO.get(usuario_id, ProgresoUsuario(usuario_id=usuario_id))
 
 
+def registrar_consulta_confirmada(usuario_id: str, articulo: str) -> ProgresoUsuario:
+    """Registra una consulta educativa aprobada sin alterar aciertos ni sanciones."""
+    p = _PROGRESO.setdefault(usuario_id, ProgresoUsuario(usuario_id=usuario_id))
+    p.consultas_confirmadas += 1
+    p.ultima_consulta_articulo = articulo
+    return p
+
+
 def reiniciar_progreso(usuario_id: str) -> None:
     _PROGRESO.pop(usuario_id, None)

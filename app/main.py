@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import re
 import threading
+import uuid
 from collections import OrderedDict
 from contextlib import asynccontextmanager
 from dataclasses import asdict
@@ -34,11 +35,12 @@ from app.services.limite_tasa import LimitadorTasa
 from app.services.llm import ClienteLLM, ErrorLLM
 from app.services.rag import cargar_indice, recuperar
 from app.tools.contravenciones import EscenarioInvalido, FueraDeDominio, cargar_tabla
-from app.tools.progreso import obtener_progreso, registrar_progreso
+from app.tools.progreso import obtener_progreso, registrar_consulta_confirmada, registrar_progreso
 from app.tools.evaluar_respuesta import evaluar_respuesta
 
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
 MAX_ESCENARIOS = 1000
+MAX_ACCIONES = 1000
 
 
 @asynccontextmanager
@@ -85,6 +87,53 @@ limitador_chat = LimitadorTasa(_lim["capacidad"], _lim["recarga_por_segundo"])
 
 _escenarios: OrderedDict[str, tuple[str, EscenarioVialSchema, Contravencion]] = OrderedDict()
 _candado = threading.Lock()
+_acciones_chat: OrderedDict[str, dict] = OrderedDict()
+_candado_acciones = threading.Lock()
+
+
+def _crear_accion_pendiente(sesion: str, resultado: dict) -> dict | None:
+    sancion = resultado.get("sancion_calculada")
+    if resultado.get("abstencion") or not sancion:
+        return None
+
+    accion_id = str(uuid.uuid4())
+    articulo = str(sancion.get("articulo") or "Normativa consultada")
+    publica = {
+        "id_accion": accion_id,
+        "tipo": "registrar_consulta_progreso",
+        "estado": "pendiente",
+        "descripcion": f"Registrar esta consulta educativa sobre {articulo} en el progreso de la sesión.",
+        "articulo": articulo,
+    }
+    with _candado_acciones:
+        _acciones_chat[accion_id] = {"sesion": sesion, **publica, "progreso": None}
+        while len(_acciones_chat) > MAX_ACCIONES:
+            _acciones_chat.popitem(last=False)
+    return publica
+
+
+def _resolver_accion_chat(id_accion: str, sesion: str, confirmar: bool) -> dict:
+    with _candado_acciones:
+        accion = _acciones_chat.get(id_accion)
+        if accion is None or accion["sesion"] != sesion:
+            raise Problema(404, "Acción no encontrada", "La acción no existe, expiró o pertenece a otra sesión.")
+
+        if accion["estado"] == "pendiente":
+            if confirmar:
+                progreso_actual = registrar_consulta_confirmada(sesion, accion["articulo"])
+                accion["estado"] = "confirmada"
+                accion["progreso"] = progreso_actual.model_dump()
+            else:
+                accion["estado"] = "descartada"
+
+        return {
+            "id_accion": accion["id_accion"],
+            "tipo": accion["tipo"],
+            "estado": accion["estado"],
+            "descripcion": accion["descripcion"],
+            "articulo": accion["articulo"],
+            "progreso": accion["progreso"],
+        }
 
 
 @lru_cache
@@ -199,13 +248,27 @@ def chat_normativo(
             }
         ]
     try:
-        return ejecutar_agente_consulta(
+        resultado = ejecutar_agente_consulta(
             pregunta,
             fragmentos_extra=fragmentos_extra,
             cliente_llm=llm,
         )
+        accion_pendiente = _crear_accion_pendiente(sesion, resultado)
+        if accion_pendiente is not None:
+            resultado["accion_pendiente"] = accion_pendiente
+        return resultado
     except ErrorLLM as e:
         raise Problema(503, "Servicio no disponible", e.mensaje_usuario, cabeceras={"Retry-After": "30"})
+
+
+@app.post("/chat/acciones/{id_accion}/confirmar")
+def confirmar_accion_chat(id_accion: str, sesion: str = Depends(clave_sesion)):
+    return _resolver_accion_chat(id_accion, sesion, confirmar=True)
+
+
+@app.post("/chat/acciones/{id_accion}/descartar")
+def descartar_accion_chat(id_accion: str, sesion: str = Depends(clave_sesion)):
+    return _resolver_accion_chat(id_accion, sesion, confirmar=False)
 
 
 @app.post("/escenarios", response_model=EscenarioPublico)
