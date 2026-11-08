@@ -104,8 +104,8 @@ La tríada aplicada es:
 | AG-02 | Recuperar conocimiento externo al LLM | Parcial | RAG léxico conectado | Completar embeddings y base vectorial |
 | AG-03 | Usar herramientas especializadas | Completo en flujo controlado | Recuperación, validación, evaluación y cálculo | Definir contratos uniformes de herramienta |
 | AG-04 | Observar el resultado de una herramienta | Completo básico | El generador recibe validación o excepción | Registrar observaciones sin datos sensibles |
-| AG-05 | Corregir o reintentar | Completo básico | Reintentos por escenario inválido y fallos del proveedor | Diferenciar reintento del LLM, del proveedor y del agente |
-| AG-06 | Decidir cuándo finalizar | Completo por reglas | Retorna escenario válido, abstención o error controlado | Formalizar estados del ciclo |
+| AG-05 | Corregir o reintentar | Completo | Segundo turno del modelo observa el resultado `tool`; existen reintentos de escenario y proveedor | Mantener las métricas separadas por tipo de reintento |
+| AG-06 | Decidir cuándo finalizar | Completo por ciclo híbrido | Dos turnos LLM como máximo, planificador seguro y tope total de seis acciones | Vigilar latencia y cuota en las pruebas de humo |
 | AG-07 | Mantener memoria de trabajo | Parcial | Escenarios en memoria por sesión | Documentar expiración; valorar SQLite solo si el alcance lo requiere |
 | AG-08 | Invocar herramientas mediante tool calling | Completo con control híbrido | El chat usa `tool_calls` y rol `tool`; `/evaluaciones` ejecuta `registrar_progreso` una sola vez mediante el despachador con argumentos Pydantic | Conservar el bloqueo de mutaciones fuera del endpoint autorizado |
 | AG-09 | Aplicar permisos mínimos | Faltante documental | Las herramientas actuales no realizan acciones irreversibles | Crear política de capacidades y límites |

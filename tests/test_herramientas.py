@@ -215,10 +215,13 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
     class ClienteLLMMockToolCalling:
         def __init__(self):
             self.llamadas = 0
+            self.segunda_observo_tool = False
 
         def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
             self.llamadas += 1
             ejecutadas = [m["name"] for m in mensajes if m["role"] == "tool"]
+            if self.llamadas == 2:
+                self.segunda_observo_tool = "buscar_normativa_rag" in ejecutadas
             if "buscar_normativa_rag" not in ejecutadas:
                 tc = SimpleNamespace(
                     id="call_mock_rag_1",
@@ -261,7 +264,10 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
         "Me pasé un semáforo en rojo, ¿cuál es la sanción?",
         cliente_llm=mock_llm,
     )
-    assert mock_llm.llamadas == 1
+    assert mock_llm.llamadas == 2
+    assert mock_llm.segunda_observo_tool is True
+    assert res["agente"]["llamadas_modelo"] == 2
+    assert res["agente"]["modo_orquestacion"] == "hibrido_iterativo"
     assert "144.60 USD" in res["respuesta"]
     mensajes_traza = res["agente"]["mensajes"]
     assert any(m["role"] == "assistant" and m.get("tool_calls") for m in mensajes_traza)

@@ -24,6 +24,7 @@ from app.tools.contravenciones import cargar_tabla
 from app.tools.progreso import ajustar_dificultad, registrar_progreso
 
 TOPE_VUELTAS = 6
+MAX_LLAMADAS_MODELO_POR_CONSULTA = 2
 UMBRAL_CONFIANZA_AUTOMATICA = 0.80
 
 SYSTEM_PROMPT_AGENTE = (
@@ -32,7 +33,8 @@ SYSTEM_PROMPT_AGENTE = (
     "1) buscar_normativa_rag para recuperar artículos vigentes del COIP/LOTTTSV/Reglamento, "
     "2) identificar_contravencion_coip para asociar la conducta con el catálogo oficial, "
     "3) calcular_sancion para calcular multa exacta en código según el SBU vigente, y "
-    "4) verificar_cita_y_seguridad antes de emitir la respuesta final."
+    "4) verificar_cita_y_seguridad antes de emitir la respuesta final. "
+    "Después de cada resultado con rol tool, obsérvalo y decide el siguiente paso; no repitas herramientas ya exitosas."
 )
 
 HERRAMIENTAS_PERMITIDAS = [
@@ -544,6 +546,7 @@ def ejecutar_agente_consulta(
     bitacora: list[dict[str, str]] = []
     estaciones: list[dict[str, Any]] = []
     vueltas = 0
+    llamadas_modelo = 0
     parametros = cargar_parametros()
     ctx: dict[str, Any] = {"fragmentos_extra": fragmentos_extra}
 
@@ -619,7 +622,13 @@ def ejecutar_agente_consulta(
     respuesta_final_modelo: str | None = None
 
     while vueltas < TOPE_VUELTAS:
-        cliente_para_paso = cliente_llm if vueltas == 0 else None
+        cliente_para_paso = (
+            cliente_llm
+            if cliente_llm is not None and llamadas_modelo < MAX_LLAMADAS_MODELO_POR_CONSULTA
+            else None
+        )
+        if cliente_para_paso is not None:
+            llamadas_modelo += 1
         msg_modelo = _solicitar_paso_modelo(pregunta, mensajes, ctx, cliente_llm=cliente_para_paso)
 
         if not msg_modelo.tool_calls:
@@ -868,6 +877,9 @@ def ejecutar_agente_consulta(
         "agente": {
             "vueltas_usadas": vueltas,
             "tope_vueltas": TOPE_VUELTAS,
+            "llamadas_modelo": llamadas_modelo,
+            "max_llamadas_modelo": MAX_LLAMADAS_MODELO_POR_CONSULTA,
+            "modo_orquestacion": "hibrido_iterativo",
             "herramientas_permitidas": HERRAMIENTAS_PERMITIDAS,
             "herramientas_fuera_de_alcance": list(HERRAMIENTAS_FUERA_DE_ALCANCE.keys()),
             "herramienta_bloqueada": None,

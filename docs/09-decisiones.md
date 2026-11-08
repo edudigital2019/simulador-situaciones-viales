@@ -74,3 +74,10 @@ La IA apoyó borradores, pruebas, documentación e interfaz. No se aceptaron res
 **Sin duplicación:** no se conserva un segundo registro directo y la prueba exige que `total_evaluados` aumente exactamente una vez.  
 **Control de autoridad:** la identidad de sesión y el resultado correcto se establecen en el servidor; la tool rechaza invocaciones procedentes del chat o de un contexto distinto de `/evaluaciones`.  
 **Costo:** no se agrega una llamada al LLM. La respuesta de evaluación incluye `herramientas_ejecutadas` para hacer auditable la ejecución.
+
+## 14. Bucle híbrido iterativo del agente
+
+**Decisión:** permitir como máximo dos llamadas al modelo por consulta normativa. En la segunda, el modelo recibe y observa el mensaje de resultado `tool` generado en la primera vuelta antes de decidir el siguiente paso.  
+**Cierre controlado:** si el modelo responde antes de ejecutar las herramientas obligatorias, el planificador Python completa recuperación, identificación, cálculo y verificación. El límite total permanece en seis acciones.  
+**Razón:** elimina el comportamiento de una única intervención del modelo y demuestra observación iterativa, sin elevar cada consulta a cinco o seis llamadas ni delegar al modelo el cálculo o la validación jurídica.  
+**Trazabilidad:** la API devuelve `llamadas_modelo`, `max_llamadas_modelo`, `modo_orquestacion`, mensajes con roles `assistant/tool` y la bitácora de herramientas.

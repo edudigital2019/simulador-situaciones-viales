@@ -95,6 +95,9 @@ interface RespuestaChatRAG {
   agente: {
     vueltas_usadas: number;
     tope_vueltas: number;
+    llamadas_modelo?: number;
+    max_llamadas_modelo?: number;
+    modo_orquestacion?: string;
     herramientas_permitidas: string[];
     herramientas_fuera_de_alcance: string[];
     herramienta_bloqueada?: string | null;
@@ -1254,6 +1257,9 @@ export default function App() {
                           <strong style={{ color: '#34d399', fontSize: '0.82rem' }}>Bitácora del Agente</strong>
                           <span className="tabular-nums" style={{ fontSize: '0.76rem', color: '#fbbf24' }}>
                             Vueltas: {respuestaChat.agente.vueltas_usadas} / {respuestaChat.agente.tope_vueltas}
+                            {respuestaChat.agente.llamadas_modelo !== undefined
+                              ? ` · LLM: ${respuestaChat.agente.llamadas_modelo} / ${respuestaChat.agente.max_llamadas_modelo}`
+                              : ''}
                           </span>
                         </div>
                         {respuestaChat.agente.bitacora.map((b, idx) => (
