@@ -170,6 +170,17 @@ def test_registrar_progreso_acumula_multas_y_puntos():
     reiniciar_progreso("usr-test-1")
 
 
+def test_tool_registrar_progreso_rechaza_invocacion_fuera_de_evaluaciones():
+    from app.services.agente import despachar_herramienta
+
+    with pytest.raises(ValueError, match="evaluación validada"):
+        despachar_herramienta(
+            "registrar_progreso",
+            {"usuario_id": "usuario-no-autorizado", "es_correcta": True},
+            contexto={},
+        )
+
+
 def test_esquemas_pydantic_y_registro_herramientas_agente():
     from app.services.agente import (
         ESQUEMAS_HERRAMIENTAS_OPENAI,

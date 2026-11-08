@@ -229,21 +229,16 @@ def _ejecutar_verificar_cita_y_seguridad(args: ArgsVerificarCitaYSeguridad, ctx:
 
 
 def _ejecutar_registrar_progreso(args: ArgsRegistrarProgreso, ctx: dict[str, Any]) -> dict[str, Any]:
+    if ctx.get("origen") != "/evaluaciones":
+        raise ValueError("registrar_progreso solo puede ejecutarse desde una evaluación validada por el servidor")
     prog = registrar_progreso(
         args.usuario_id,
         es_correcta=args.es_correcta,
         multa_usd=args.multa_usd,
         puntos_reducidos=args.puntos_reducidos,
     )
-    return {
-        "usuario_id": prog.usuario_id,
-        "total_evaluados": prog.total_evaluados,
-        "aciertos": prog.aciertos,
-        "fallos": prog.fallos,
-        "multas_acumuladas_usd": prog.multas_acumuladas_usd,
-        "puntos_perdidos": prog.puntos_perdidos,
-        "nivel_sugerido": prog.nivel_sugerido,
-    }
+    ctx["progreso"] = prog.model_dump()
+    return prog.model_dump()
 
 
 def _ejecutar_ajustar_dificultad(args: ArgsAjustarDificultad, ctx: dict[str, Any]) -> dict[str, Any]:
@@ -308,6 +303,25 @@ def despachar_herramienta(
     args_validados = esquema_cls.model_validate(datos_raw)
     ctx = contexto if contexto is not None else {}
     return funcion(args_validados, ctx)
+
+
+def registrar_resultado_evaluacion_con_agente(
+    usuario_id: str,
+    es_correcta: bool,
+    multa_usd: float = 0.0,
+    puntos_reducidos: float = 0.0,
+) -> dict[str, Any]:
+    """Ejecuta una sola vez la tool de progreso con identidad controlada por el servidor."""
+    return despachar_herramienta(
+        "registrar_progreso",
+        {
+            "usuario_id": usuario_id,
+            "es_correcta": es_correcta,
+            "multa_usd": multa_usd,
+            "puntos_reducidos": puntos_reducidos,
+        },
+        contexto={"origen": "/evaluaciones"},
+    )
 
 
 def _detectar_herramienta_prohibida(pregunta: str) -> str | None:

@@ -67,3 +67,10 @@ La IA apoyó borradores, pruebas, documentación e interfaz. No se aceptaron res
 **Decisión:** después de la primera evaluación, `/escenarios` consulta el progreso de la sesión y utiliza `dificultad_sugerida` como nivel efectivo del siguiente escenario.  
 **Trazabilidad:** la respuesta conserva `nivel_solicitado`, devuelve el nivel aplicado y marca `dificultad_aplicada_por_progreso`; la interfaz muestra “Nivel adaptado según tu progreso”.  
 **Razón:** la sugerencia deja de ser un dato sin consumidor y afecta realmente la generación y validación del escenario siguiente.
+
+## 13. Registro de progreso mediante herramienta del agente
+
+**Decisión:** `/evaluaciones` reemplaza la llamada directa a la función de progreso por una única ejecución de `registrar_progreso` mediante el registro y despachador de herramientas del agente.  
+**Sin duplicación:** no se conserva un segundo registro directo y la prueba exige que `total_evaluados` aumente exactamente una vez.  
+**Control de autoridad:** la identidad de sesión y el resultado correcto se establecen en el servidor; la tool rechaza invocaciones procedentes del chat o de un contexto distinto de `/evaluaciones`.  
+**Costo:** no se agrega una llamada al LLM. La respuesta de evaluación incluye `herramientas_ejecutadas` para hacer auditable la ejecución.

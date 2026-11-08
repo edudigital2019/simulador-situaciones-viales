@@ -29,13 +29,13 @@ from app.schemas import (
     SolicitudEscenario,
     SolicitudEvaluacion,
 )
-from app.services.agente import ejecutar_agente_consulta
+from app.services.agente import ejecutar_agente_consulta, registrar_resultado_evaluacion_con_agente
 from app.services.generador import generar_escenario
 from app.services.limite_tasa import LimitadorTasa
 from app.services.llm import ClienteLLM, ErrorLLM
 from app.services.rag import cargar_indice, recuperar
 from app.tools.contravenciones import EscenarioInvalido, FueraDeDominio, cargar_tabla
-from app.tools.progreso import obtener_progreso, registrar_consulta_confirmada, registrar_progreso
+from app.tools.progreso import obtener_progreso, registrar_consulta_confirmada
 from app.tools.evaluar_respuesta import evaluar_respuesta
 
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
@@ -343,12 +343,14 @@ def evaluar(solicitud: SolicitudEvaluacion, sesion: str = Depends(clave_sesion))
         del _escenarios[solicitud.id_escenario]
     _, esc, contravencion = registro
     res = evaluar_respuesta(esc, contravencion, solicitud.respuesta)
-    res.progreso = registrar_progreso(
+    progreso_tool = registrar_resultado_evaluacion_con_agente(
         sesion,
         res.es_correcta,
         res.sancion.multa_usd if not res.es_correcta else 0.0,
         res.sancion.puntos_reducidos if not res.es_correcta else 0.0,
     )
+    res.progreso = ProgresoUsuario.model_validate(progreso_tool)
+    res.herramientas_ejecutadas = ["registrar_progreso"]
     return res
 
 

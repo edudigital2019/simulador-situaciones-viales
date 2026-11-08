@@ -177,8 +177,30 @@ def test_evaluacion_registra_progreso_usuario():
     creado = client.post("/escenarios", json={"perfil": "conductor_particular", "nivel_dificultad": "baja"}, headers=headers).json()
     r_eval = client.post("/evaluaciones", json={"id_escenario": creado["id_escenario"], "respuesta": "B"}, headers=headers).json()
     assert r_eval["progreso"]["aciertos"] >= 1
+    assert r_eval["herramientas_ejecutadas"] == ["registrar_progreso"]
     prog = client.get("/progreso", headers=headers).json()
     assert prog["total_evaluados"] >= 1 and prog["aciertos"] >= 1
+
+
+def test_tool_registrar_progreso_se_ejecuta_una_sola_vez_por_evaluacion():
+    sesion = "tool-progreso-unico-test-01"
+    client = con(LLMFalso(mock_escenario()))
+    headers = {"X-Session-ID": sesion}
+    creado = client.post(
+        "/escenarios",
+        json={"perfil": "conductor_particular", "nivel_dificultad": "baja"},
+        headers=headers,
+    ).json()
+
+    evaluacion = client.post(
+        "/evaluaciones",
+        json={"id_escenario": creado["id_escenario"], "respuesta": "B"},
+        headers=headers,
+    ).json()
+
+    assert evaluacion["herramientas_ejecutadas"] == ["registrar_progreso"]
+    assert evaluacion["progreso"]["total_evaluados"] == 1
+    assert client.get("/progreso", headers=headers).json()["total_evaluados"] == 1
 
 
 def test_siguiente_escenario_aplica_dificultad_sugerida_por_progreso():

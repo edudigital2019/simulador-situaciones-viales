@@ -165,4 +165,5 @@ class ResultadoEvaluacion(Estricto):
     contravencion: ContravencionPublica
     sancion: Sancion
     progreso: ProgresoUsuario | None = None
+    herramientas_ejecutadas: list[str] = Field(default_factory=list)
     aviso: str

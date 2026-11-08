@@ -107,7 +107,7 @@ La tríada aplicada es:
 | AG-05 | Corregir o reintentar | Completo básico | Reintentos por escenario inválido y fallos del proveedor | Diferenciar reintento del LLM, del proveedor y del agente |
 | AG-06 | Decidir cuándo finalizar | Completo por reglas | Retorna escenario válido, abstención o error controlado | Formalizar estados del ciclo |
 | AG-07 | Mantener memoria de trabajo | Parcial | Escenarios en memoria por sesión | Documentar expiración; valorar SQLite solo si el alcance lo requiere |
-| AG-08 | Invocar herramientas mediante tool calling del LLM | No aplicable por ahora | Las herramientas son orquestadas por Python | No es necesario para demostrar un agente controlado; implementarlo solo si la rúbrica lo exige explícitamente |
+| AG-08 | Invocar herramientas mediante tool calling | Completo con control híbrido | El chat usa `tool_calls` y rol `tool`; `/evaluaciones` ejecuta `registrar_progreso` una sola vez mediante el despachador con argumentos Pydantic | Conservar el bloqueo de mutaciones fuera del endpoint autorizado |
 | AG-09 | Aplicar permisos mínimos | Faltante documental | Las herramientas actuales no realizan acciones irreversibles | Crear política de capacidades y límites |
 | AG-10 | Explicar con evidencia | Parcial | Cita jurídica y explicación educativa | Mostrar en la UI las fuentes RAG usadas y sus metadatos |
 
@@ -129,7 +129,7 @@ La tríada aplicada es:
 1. **Base vectorial declarada frente a implementada:** algunos documentos presentan ChromaDB como arquitectura prevista, pero la ejecución actual usa un índice JSON y búsqueda léxica.
 2. **Identificador del modelo:** la documentación debe distinguir el valor configurado del modelo efectivamente disponible y utilizado en una ejecución.
 3. **SBU:** `config/parametros.json` define USD 482 para 2026, mientras documentos anteriores todavía muestran USD 460. La configuración vigente debe ser la única fuente operativa y debe verificarse oficialmente.
-4. **Concepto de agente:** actualmente existe conducta agéntica mediante un pipeline controlado, pero no una clase o módulo explícito llamado `AgenteVial` ni tool calling dinámico.
+4. **Concepto de agente:** se adopta un agente híbrido: el chat utiliza `tool_calls` con mensajes de rol `tool`, mientras las mutaciones de progreso se despachan de forma determinista desde un endpoint autorizado para impedir escrituras propuestas libremente por el modelo.
 5. **Estado de las pruebas:** la existencia de archivos de prueba no sustituye una evidencia reciente de ejecución con sus dependencias instaladas.
 6. **RAG y tabla canónica:** el RAG recupera normativa; la tabla canónica autoriza contravenciones. Ambos roles deben permanecer separados en la documentación.
 
