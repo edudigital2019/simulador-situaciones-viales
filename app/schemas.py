@@ -115,6 +115,8 @@ class EscenarioPublico(Estricto):
     id_escenario: str
     perfil: Perfil
     nivel_dificultad: Dificultad
+    dificultad_aplicada_por_progreso: bool = False
+    nivel_solicitado: Dificultad
     situacion: str
     opciones: list[OpcionPublica]
     aviso: str

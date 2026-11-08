@@ -282,8 +282,17 @@ def crear_escenario(solicitud: SolicitudEscenario, sesion: str = Depends(clave_s
             f"Has generado muchos escenarios seguidos. Intenta de nuevo en {int(espera)} s.",
             cabeceras={"Retry-After": str(int(espera))},
         )
+    nivel_solicitado = solicitud.nivel_dificultad
+    progreso_actual = obtener_progreso(sesion)
+    dificultad_aplicada_por_progreso = progreso_actual.total_evaluados > 0
+    solicitud_efectiva = solicitud
+    if dificultad_aplicada_por_progreso:
+        solicitud_efectiva = solicitud.model_copy(
+            update={"nivel_dificultad": progreso_actual.dificultad_sugerida}
+        )
+
     try:
-        esc, contravencion = generar_escenario(llm, solicitud)
+        esc, contravencion = generar_escenario(llm, solicitud_efectiva)
     except FueraDeDominio:
         raise Problema(
             422,
@@ -310,6 +319,8 @@ def crear_escenario(solicitud: SolicitudEscenario, sesion: str = Depends(clave_s
         id_escenario=esc.id_escenario,
         perfil=esc.perfil,
         nivel_dificultad=esc.nivel_dificultad,
+        dificultad_aplicada_por_progreso=dificultad_aplicada_por_progreso,
+        nivel_solicitado=nivel_solicitado,
         situacion=esc.situacion,
         opciones=[
             OpcionPublica(id_opcion=o.id_opcion, texto=o.texto)

@@ -17,6 +17,7 @@ from app.main import (
 )
 from app.schemas import EscenarioVialSchema, OpcionEscenario, SolicitudChat, SolicitudEscenario, SolicitudEvaluacion
 from app.services.llm import ProveedorNoDisponible, Resultado
+from app.tools.progreso import registrar_progreso
 
 
 class LLMFalso:
@@ -178,6 +179,26 @@ def test_evaluacion_registra_progreso_usuario():
     assert r_eval["progreso"]["aciertos"] >= 1
     prog = client.get("/progreso", headers=headers).json()
     assert prog["total_evaluados"] >= 1 and prog["aciertos"] >= 1
+
+
+def test_siguiente_escenario_aplica_dificultad_sugerida_por_progreso():
+    sesion = "dificultad-adaptativa-test-01"
+    registrar_progreso(sesion, True)
+    progreso_adaptado = registrar_progreso(sesion, True)
+    assert progreso_adaptado.dificultad_sugerida == "media"
+
+    client = con(LLMFalso(mock_escenario(nivel_dificultad="media")))
+    respuesta = client.post(
+        "/escenarios",
+        json={"perfil": "conductor_particular", "nivel_dificultad": "baja"},
+        headers={"X-Session-ID": sesion},
+    )
+
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert datos["nivel_solicitado"] == "baja"
+    assert datos["nivel_dificultad"] == "media"
+    assert datos["dificultad_aplicada_por_progreso"] is True
 
 
 def test_chat_aplica_limite_de_tasa_y_retry_after(monkeypatch):

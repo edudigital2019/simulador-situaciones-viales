@@ -15,6 +15,8 @@ interface EscenarioPublico {
   id_escenario: string;
   perfil: Perfil;
   nivel_dificultad: Dificultad;
+  dificultad_aplicada_por_progreso: boolean;
+  nivel_solicitado: Dificultad;
   situacion: string;
   opciones: OpcionPublica[];
   aviso: string;
@@ -279,6 +281,7 @@ export default function App() {
 
       const datos: EscenarioPublico = await res.json();
       setEscenario(datos);
+      setDificultad(datos.nivel_dificultad);
       setEstado('completa');
     } catch {
       setMensajeError('No hay conexión con el servidor local.');
@@ -748,6 +751,19 @@ export default function App() {
                   }}>
                     {escenario.perfil.replace('_', ' ')} · Dificultad {escenario.nivel_dificultad}
                   </span>
+                  {escenario.dificultad_aplicada_por_progreso && (
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: '#c4b5fd',
+                      background: 'rgba(139, 92, 246, 0.12)',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                      padding: '0.3rem 0.75rem',
+                      borderRadius: '9999px',
+                    }}>
+                      Nivel adaptado según tu progreso
+                    </span>
+                  )}
                 </div>
 
                 <h2 style={{

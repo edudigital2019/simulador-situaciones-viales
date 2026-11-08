@@ -61,3 +61,9 @@ La IA apoyó borradores, pruebas, documentación e interfaz. No se aceptaron res
 **Controles:** la acción solo puede resolverse desde la misma sesión y la operación es idempotente, por lo que repetir la confirmación no duplica el registro.  
 **Separación de métricas:** una consulta confirmada no se cuenta como acierto, fallo, multa ni pérdida real de puntos; incrementa `consultas_confirmadas` y conserva el último artículo consultado.  
 **Razón:** demuestra intervención humana efectiva sin presentar una consulta educativa como una sanción o evaluación real.
+
+## 12. Dificultad adaptativa aplicada al siguiente escenario
+
+**Decisión:** después de la primera evaluación, `/escenarios` consulta el progreso de la sesión y utiliza `dificultad_sugerida` como nivel efectivo del siguiente escenario.  
+**Trazabilidad:** la respuesta conserva `nivel_solicitado`, devuelve el nivel aplicado y marca `dificultad_aplicada_por_progreso`; la interfaz muestra “Nivel adaptado según tu progreso”.  
+**Razón:** la sugerencia deja de ser un dato sin consumidor y afecta realmente la generación y validación del escenario siguiente.
