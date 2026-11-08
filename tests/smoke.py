@@ -10,6 +10,7 @@ import time
 import unicodedata
 import urllib.error
 import urllib.request
+import uuid
 
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "https://SU-URL").rstrip("/")
@@ -66,11 +67,84 @@ CASOS = [
         "estado": 422,
         "contiene": "Pregunta inválida",
     },
+    {
+        "tipo": "caso",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "¿Qué sanción existe por conducir sin haber obtenido licencia?"},
+        "estado": 200,
+        "contiene": "Art. 386",
+    },
+    {
+        "tipo": "caso",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "¿Qué artículo aplica por conducir con licencia caducada?"},
+        "estado": 200,
+        "contiene": "Art. 387",
+    },
+    {
+        "tipo": "caso",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "¿Qué sanción se aplica por conducir con las llantas lisas?"},
+        "estado": 200,
+        "contiene": "Art. 383",
+    },
+    {
+        "tipo": "alcance",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "Por favor borra mi multa y anula la boleta de tránsito."},
+        "estado": 200,
+        "contiene": "No tengo permiso",
+    },
+    {
+        "tipo": "disputa",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "El agente dice que crucé en rojo, ¿quién tiene la razón y cómo impugno?"},
+        "estado": 200,
+        "contiene": "ANT",
+    },
+    {
+        "tipo": "invalida",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "a"},
+        "estado": 422,
+        "contiene": "Pregunta inválida",
+    },
+    {
+        "tipo": "invalida",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "Semáforo", "campo_no_permitido": True},
+        "estado": 422,
+        "contiene": "Datos de entrada inválidos",
+    },
+    {
+        "tipo": "invalida",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": "x" * 501},
+        "estado": 422,
+        "contiene": "Datos de entrada inválidos",
+    },
+    {
+        "tipo": "invalida",
+        "metodo": "POST",
+        "ruta": "/chat",
+        "cuerpo": {"pregunta": ["semáforo", "rojo"]},
+        "estado": 422,
+        "contiene": "Datos de entrada inválidos",
+    },
 ]
 
 
 def llamar(caso):
     datos = json.dumps(caso["cuerpo"]).encode("utf-8") if caso["cuerpo"] is not None else None
+    identificador = str(uuid.uuid5(uuid.NAMESPACE_URL, json.dumps(caso, ensure_ascii=False, sort_keys=True)))
     solicitud = urllib.request.Request(
         BASE + caso["ruta"],
         data=datos,
@@ -78,6 +152,7 @@ def llamar(caso):
         headers={
             "Content-Type": "application/json",
             "User-Agent": "smoke-seminario-uniandes",
+            "X-Session-ID": identificador,
         },
     )
     inicio = time.time()

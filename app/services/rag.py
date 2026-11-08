@@ -417,16 +417,37 @@ def buscar_contravencion_relacionada(consulta: str, articulo_recuperado: str | N
         if t in TESAURO_VIAL:
             tokens_q.update(TESAURO_VIAL[t])
 
+    tabla = list(cargar_tabla().values())
+
+    # Una coincidencia clara con la conducta descrita debe prevalecer sobre el
+    # artículo sugerido por el RAG. Antes, el bono fijo del artículo recuperado
+    # podía seleccionar cualquier numeral del artículo equivocado, incluso sin
+    # compartir palabras con la consulta.
     mejor = None
     mejor_pts = 0.0
-    for c in cargar_tabla().values():
-        pts = 6.0 if (articulo_recuperado and f"Art. {articulo_recuperado}" in c.articulo) else 0.0
+    for c in tabla:
         tokens_c = set(tokenizar(f"{c.descripcion_infraccion} {c.texto_literal_coip or ''}"))
-        pts += len(tokens_q.intersection(tokens_c)) * 2.5
+        pts = len(tokens_q.intersection(tokens_c)) * 2.5
         if pts > mejor_pts:
             mejor_pts = pts
             mejor = c
-    return mejor if mejor_pts >= 5.0 else None
+    if mejor_pts >= 5.0:
+        return mejor
+
+    # Para consultas vagas, el artículo recuperado sigue funcionando como
+    # respaldo, eligiendo dentro de él la candidata con mayor afinidad léxica.
+    if articulo_recuperado:
+        candidatas_articulo = [c for c in tabla if f"Art. {articulo_recuperado}" in c.articulo]
+        if candidatas_articulo:
+            return max(
+                candidatas_articulo,
+                key=lambda c: len(
+                    tokens_q.intersection(
+                        set(tokenizar(f"{c.descripcion_infraccion} {c.texto_literal_coip or ''}"))
+                    )
+                ),
+            )
+    return None
 
 
 def responder(

@@ -284,7 +284,7 @@ def test_agente_no_acepta_respuesta_directa_sin_consultar_herramientas():
     assert any(m.get("name") == "buscar_normativa_rag" for m in res["agente"]["mensajes"])
 
 
-def test_agente_maneja_argumentos_invalidos_sin_error_interno():
+def test_agente_completa_argumentos_rag_invalidos_con_la_pregunta_original():
     from types import SimpleNamespace
     from app.services.agente import ejecutar_agente_consulta
 
@@ -309,5 +309,37 @@ def test_agente_maneja_argumentos_invalidos_sin_error_interno():
 
     assert res["tipo"] in {"con_fuente", "silencio"}
     assert res["respuesta"]
-    assert any("Argumentos inválidos" in b["detalle"] for b in res["agente"]["bitacora"])
+    assert res["citas"] == ["COIP, Art. 389"]
+    assert any(
+        m.get("role") == "tool" and m.get("name") == "buscar_normativa_rag"
+        for m in res["agente"]["mensajes"]
+    )
+
+
+def test_agente_no_permite_que_el_modelo_cambie_la_consulta_rag():
+    from types import SimpleNamespace
+    from app.services.agente import ejecutar_agente_consulta
+
+    class ClienteQueReformulaMal:
+        def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
+            llamada = SimpleNamespace(
+                id="call_consulta_alterada",
+                function=SimpleNamespace(
+                    name="buscar_normativa_rag",
+                    arguments=json.dumps({"consulta": "peatón que no deja pasar ambulancia", "top_k": 5}),
+                ),
+            )
+            return SimpleNamespace(content=None, tool_calls=[llamada]), "mock", "modelo-mock", 5, 1
+
+    pregunta = "Me pasé un semáforo en rojo, ¿cuál es la sanción?"
+    res = ejecutar_agente_consulta(pregunta, cliente_llm=ClienteQueReformulaMal())
+
+    primer_resultado = next(
+        json.loads(m["content"])
+        for m in res["agente"]["mensajes"]
+        if m.get("role") == "tool" and m.get("name") == "buscar_normativa_rag"
+    )
+    assert primer_resultado["cita_principal"] == "COIP, Art. 389"
+    assert res["citas"] == ["COIP, Art. 389"]
+    assert "Art. 389" in res["respuesta"]
 

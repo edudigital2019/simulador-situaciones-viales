@@ -129,7 +129,7 @@ Se acepta perder los escenarios temporales porque el proyecto es una demostraci�
 ## Pruebas y evaluación
 
 ```bash
-# 72 pruebas unitarias y de integración con proveedor simulado
+# 74 pruebas unitarias y de integración con proveedor simulado
 python -m pytest -q
 
 # Evaluación del RAG
@@ -139,7 +139,7 @@ python eval/run_eval.py
 python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/
 ```
 
-El taller registró `6/6` pruebas funcionales aprobadas, con p95 de 49.2 s, en la corrida enlazada en la sección de despliegue. Antes del cierre, la salida exacta de esa corrida debe copiarse en [`docs/evidencias/semana-4/pruebas-humo.md`](docs/evidencias/semana-4/pruebas-humo.md). La evaluación del RAG está en [`docs/07-evaluacion.md`](docs/07-evaluacion.md).
+La corrida final del 7 de noviembre registró `15/15` pruebas funcionales aprobadas, con p95 de 8.5 s y un primer chat de 49.8 s por calentamiento. La salida exacta está en [`docs/evidencias/semana-4/pruebas-humo.md`](docs/evidencias/semana-4/pruebas-humo.md), el catálogo en [`docs/08-pruebas.md`](docs/08-pruebas.md) y la evaluación del RAG en [`docs/07-evaluacion.md`](docs/07-evaluacion.md).
 
 ## Integración estable con el modelo
 
@@ -166,7 +166,7 @@ La conmutación se comprobó configurando temporalmente un modelo inexistente. G
 ## Limitaciones conocidas
 
 - El respaldo de producción es el proveedor simulado local, no un segundo proveedor externo.
-- `/chat` limita la entrada a 500 caracteres, pero todavía no aplica un límite de peticiones por usuario.
+- `/chat` limita la entrada a 500 caracteres y aplica un límite de peticiones por sesión o IP con respuesta `429` y `Retry-After`.
 - El limitador de tasa y los escenarios viven en memoria y no se comparten entre varias instancias.
 - Cloud Run puede presentar un arranque en frío cuando escala desde cero.
 - El contenido es educativo y no reemplaza una fuente oficial ni asesoría jurídica.
@@ -180,3 +180,11 @@ La conmutación se comprobó configurando temporalmente un modelo inexistente. G
 ## Uso de IA durante el desarrollo
 
 Se utilizaron herramientas de IA generativa para apoyar borradores de esquemas, pruebas, documentación e interfaz. El equipo revisó los resultados, contrastó la información normativa y ejecutó las pruebas automatizadas antes de publicar los cambios.
+
+### Aportes y revisión por integrante
+
+- **Fausto Cando:** utilizó IA para apoyar borradores de configuración de FastAPI, cliente LLM, manejo de errores y pruebas con mocks. Revisó manualmente timeouts, reintentos, lista blanca de herramientas, rutas y comportamiento de respaldo.
+- **Isidoro Guaman:** utilizó IA para apoyar la estructuración del corpus, tabla canónica, prompts y bancos de evaluación. Revisó artículos, vigencia, sanciones, puntos y resultados Hit@1/Hit@5 contra las fuentes normativas.
+- **Luis Naranjo:** utilizó IA para apoyar componentes visuales, textos ciudadanos y documentación. Revisó accesibilidad, claridad de la interfaz, evidencias y correspondencia entre la aplicación desplegada y el material de sustentación.
+
+Las decisiones jurídicas y aritméticas no se delegaron a la IA: el equipo mantuvo la tabla canónica, el SBU configurable, la validación de citas y las pruebas reproducibles. Véanse `docs/07-evaluacion.md`, `docs/08-pruebas.md` y `docs/09-decisiones.md`.

@@ -1,0 +1,614 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 8 /Kids [ 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Length 4624 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 535.0 960.0 5.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 494.0 272.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 501.0 Td (UNIANDES · SEMINARIO IA GENERATIVA · MÓDULO 4) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 320.0 494.0 137.6 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 329.0 501.0 Td (CASO N.° 08 · GRUPO 8) Tj ET
+BT /F2 9.5 Tf 0.200 0.830 0.600 rg 695.0 500.5 Td (Sustentación: 12 min + 3 min Tribunal) Tj ET
+BT /F2 10.5 Tf 0.200 0.830 0.600 rg 40.0 455.5 Td (EDUCACIÓN VIAL Y CONSULTA NORMATIVA · COIP & LOTTTSV \(ECUADOR\)) Tj ET
+BT /F2 38.0 Tf 0.980 0.990 1.000 rg 40.0 408.0 Td (Vía Segura) Tj ET
+BT /F1 12.5 Tf 0.800 0.850 0.920 rg 40.0 385.5 Td (Simulador educativo de situaciones viales y agente consultor con recuperación vectorial \(RAG\),) Tj ET
+BT /F1 12.5 Tf 0.800 0.850 0.920 rg 40.0 368.0 Td (verificación de citas y cálculo determinista de sanciones \(SBU 2026: $482.00 USD\).) Tj ET
+0.90 w 0.040 0.060 0.110 rg 0.160 0.220 0.340 RG 40.0 265.0 210.0 82.0 re B
+BT /F2 8.0 Tf 0.580 0.640 0.720 rg 52.0 328.0 Td (URL PÚBLICA CLOUD RUN) Tj ET
+BT /F3 17.0 Tf 0.200 0.830 0.600 rg 52.0 301.0 Td (g8-vial...run.app) Tj ET
+BT /F1 8.8 Tf 0.550 0.620 0.700 rg 52.0 281.2 Td (us-central1 · HTTPS activo) Tj ET
+0.90 w 0.040 0.060 0.110 rg 0.160 0.220 0.340 RG 263.0 265.0 210.0 82.0 re B
+BT /F2 8.0 Tf 0.580 0.640 0.720 rg 275.0 328.0 Td (CORPUS NORMATIVO RAG) Tj ET
+BT /F3 17.0 Tf 0.980 0.750 0.140 rg 275.0 301.0 Td (641 artículos) Tj ET
+BT /F1 8.8 Tf 0.550 0.620 0.700 rg 275.0 281.2 Td (Vigentes en ChromaDB \(e5-small\)) Tj ET
+0.90 w 0.040 0.060 0.110 rg 0.160 0.220 0.340 RG 486.0 265.0 210.0 82.0 re B
+BT /F2 8.0 Tf 0.580 0.640 0.720 rg 498.0 328.0 Td (PRECISIÓN RAG \(HIT@1 / HIT@5\)) Tj ET
+BT /F3 17.0 Tf 0.200 0.830 0.600 rg 498.0 301.0 Td (87.5% / 100%) Tj ET
+BT /F1 8.8 Tf 0.550 0.620 0.700 rg 498.0 281.2 Td (Evaluado en 2 bancos de 20 casos) Tj ET
+0.90 w 0.040 0.060 0.110 rg 0.160 0.220 0.340 RG 709.0 265.0 210.0 82.0 re B
+BT /F2 8.0 Tf 0.580 0.640 0.720 rg 721.0 328.0 Td (PRUEBAS PYTEST + HUMO) Tj ET
+BT /F3 17.0 Tf 0.770 0.710 0.990 rg 721.0 301.0 Td (72 + 6/6) Tj ET
+BT /F1 8.8 Tf 0.550 0.620 0.700 rg 721.0 281.2 Td (Pipeline verde · p95 = 49.2 s) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 62.0 284.0 182.0 re B
+0.063 0.725 0.506 rg 40.0 62.0 3.5 182.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 55.0 221.8 Td (INTEGRANTE 1 · MIN 00:00 A 05:00 \(5 MIN\)) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 203.0 Td (Luis Naranjo) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 55.0 186.4 Td (1. Problema y usuario \(1 min\) + 2. Demo en) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 55.0 172.9 Td (vivo sobre la URL pública en Cloud Run \(4) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 55.0 159.4 Td (min\): caso con cita, regla de silencio y) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 55.0 145.9 Td (confirmación humana.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 338.0 62.0 284.0 182.0 re B
+0.960 0.620 0.040 rg 338.0 62.0 3.5 182.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 353.0 221.8 Td (INTEGRANTE 2 · MIN 05:00-07:00 Y 09:00-10:00 \(3 MIN\)) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 353.0 203.0 Td (Fausto Cando) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 353.0 186.4 Td (3. Arquitectura y almacenamiento en) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 353.0 172.9 Td (producción \(2 min\) + 5. Seguridad de) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 353.0 159.4 Td (credenciales, timeout, reintentos y) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 353.0 145.9 Td (conmutación a respaldo en 17 ms \(1 min\).) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 636.0 62.0 284.0 182.0 re B
+0.650 0.550 0.980 rg 636.0 62.0 3.5 182.0 re f
+BT /F2 8.2 Tf 0.650 0.550 0.980 rg 651.0 221.8 Td (INTEGRANTE 3 · MIN 07:00-09:00 Y 10:00-12:00 \(4 MIN\)) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 651.0 203.0 Td (Isidoro Guaman) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 651.0 186.4 Td (4. Evidencias: evaluación RAG vs Semana 3,) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 651.0 172.9 Td (pipeline en verde y pruebas funcionales en) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 651.0 159.4 Td (la URL \(2 min\) + 6. Limitaciones conocidas) Tj ET
+BT /F1 9.6 Tf 0.800 0.850 0.920 rg 651.0 145.9 Td (y uso de IA \(2 min\).) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (URL Pública: https://g8-vial-834435723683.us-central1.run.app/  |  Salud: /health) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 1 / 8) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 5295 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 216.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 1 · MIN 00:00 A 01:00 \(1 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 264.0 498.0 120.8 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 273.0 505.0 Td (PROBLEMA Y USUARIO) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 790.0 498.0 130.0 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 800.0 504.7 Td (Expone: Luis Naranjo) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (1. ¿Qué problema resuelve Vía Segura y para quién?) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Orientación legal verificada en tránsito ecuatoriano sin artículos inventados ni multas mal calculadas.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 284.0 362.0 re B
+0.950 0.250 0.370 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.950 0.250 0.370 rg 55.0 399.8 Td (EL PROBLEMA REAL) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (Riesgo de alucinación legal) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 55.0 364.2 Td (>> Desconocimiento normativo:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 351.1 Td (Conductores y peatones no saben qué) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 338.3 Td (artículo del COIP o LOTTTSV aplica en) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 325.5 Td (situaciones reales.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 55.0 307.8 Td (>> Alucinación en LLMs libres:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 294.7 Td (Un chatbot genérico inventa numerales,) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 281.9 Td (cita normas derogadas o confunde clases de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 269.1 Td (contravenciones.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 55.0 251.4 Td (>> Errores aritméticos en multas:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 238.3 Td (Los modelos usan SBU antiguos \($450/$460\)) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 225.5 Td (e ignoran la reforma RO 512 \(2021\) sobre) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 212.7 Td (puntos de licencia.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 338.0 60.0 284.0 362.0 re B
+0.960 0.620 0.040 rg 338.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 353.0 399.8 Td (USUARIOS OBJETIVO) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 353.0 381.0 Td (5 Perfiles viales ciudadanos) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 364.2 Td (>> Conductor Particular \(Lic. B\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 351.1 Td (Cruces en semáforo, uso del celular,) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 338.3 Td (estacionamiento y límites urbanos.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 320.6 Td (>> Conductor Profesional \(Lic. C/D/E\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 307.5 Td (Transporte de pasajeros/carga, llantas) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 294.7 Td (lisas y exceso de pasajeros.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 277.0 Td (>> Motociclista \(Lic. A\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 263.9 Td (Uso de casco homologado, chaleco) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 251.1 Td (retroreflectivo y rebase seguro.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 233.4 Td (>> Ciclista y Peatón:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 220.3 Td (Preferencia en paso cebra, respeto a) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 207.5 Td (ciclovías, aceras y ambulancias.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 636.0 60.0 284.0 362.0 re B
+0.063 0.725 0.506 rg 636.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 651.0 399.8 Td (NUESTRA SOLUCIÓN) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 651.0 381.0 Td (El LLM propone; Python valida) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 651.0 364.2 Td (>> Citas verificadas con RAG:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 351.1 Td (Solo responde usando los 641 artículos) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 338.3 Td (vigentes en ChromaDB \(umbral coseno <=) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 325.5 Td (0.45\).) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 651.0 307.8 Td (>> Cálculo 100% en Python:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 294.7 Td (Multas exactas con SBU 2026 \($482.00 USD\)) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 281.9 Td (desde tabla canónica auditada, nunca) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 269.1 Td (calculadas por el LLM.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 651.0 251.4 Td (>> Interfaz ciudadana clara:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 238.3 Td (Una sola línea de sanción para actuar y) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 225.5 Td (panel plegable de Detalles técnicos para) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 212.7 Td (el tribunal.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Principio de diseño: El modelo redacta en lenguaje ciudadano; Python verifica la cita y calcula la multa.) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 2 / 8) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 6005 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 216.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 2 · MIN 01:00 A 05:00 \(4 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 264.0 498.0 221.6 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 273.0 505.0 Td (DEMO EN VIVO · URL PÚBLICA CLOUD RUN) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 790.0 498.0 130.0 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 800.0 504.7 Td (Expone: Luis Naranjo) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (2. Demostración en vivo sobre https://g8-vial-834435723683.us-central1.run.app/) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Verificación de /health \(200 OK · 641 fragmentos\) y ejecución de los 3 escenarios exigidos por el tribunal.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 284.0 362.0 re B
+0.063 0.725 0.506 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 55.0 399.8 Td (PASO 1 · MIN 01:30 - 02:45) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (Caso normal con cita y SBU) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 364.2 Td (>> Botón 'Pasarse luz roja':) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 351.1 Td (Consulta: 'Me pasé un semáforo en rojo,) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 338.3 Td (¿cuántos puntos pierdo y cuánto es la) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 325.5 Td (multa?') Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 307.8 Td (>> Fuente legal verificada:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 294.7 Td (Recupera y cita explícitamente COIP Art.) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 281.9 Td (389 \(Contravención de 4.ª clase\).) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 264.2 Td (>> Cálculo exacto en 1 línea:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 251.1 Td ('Si cometes esta infracción: multa de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 238.3 Td ($144.60 \(30% del SBU\) y -6 puntos.' \(30%) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 225.5 Td (de $482 = $144.60\).) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 207.8 Td (>> Detalles técnicos plegables:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 194.7 Td (Muestra distancia coseno, Top-5 de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 181.9 Td (ChromaDB y bitácora de vueltas del agente.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 338.0 60.0 284.0 362.0 re B
+0.950 0.250 0.370 rg 338.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.950 0.250 0.370 rg 353.0 399.8 Td (PASO 2 · MIN 02:45 - 03:45) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 353.0 381.0 Td (Pregunta fuera de tema) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 353.0 364.2 Td (>> Botón 'Consulta ajena a tránsito':) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 351.1 Td (Consulta: '¿Cómo se prepara un encebollado) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 338.3 Td (y cuánto cuesta la matrícula?') Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 353.0 320.6 Td (>> Abstención activa \(Silencio\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 307.5 Td (El filtro de anclas viales y derivación) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 294.7 Td (ANT detecta que está fuera del alcance) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 281.9 Td (normativo.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 353.0 264.2 Td (>> Cero artículos inventados:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 251.1 Td (Informa con claridad que solo atiende) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 238.3 Td (normativa vial y deriva trámites a la ANT.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 353.0 220.6 Td (>> UI sin falsos aprobados:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 207.5 Td (Oculta automáticamente la tarjeta de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 194.7 Td (confirmación humana cuando aplica regla de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 181.9 Td (silencio.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 636.0 60.0 284.0 362.0 re B
+0.960 0.620 0.040 rg 636.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 651.0 399.8 Td (PASO 3 · MIN 03:45 - 05:00) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 651.0 381.0 Td (Confirmación humana y alcance) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 651.0 364.2 Td (>> Acción con aprobación humana:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 351.1 Td (Tarjeta 'Confirmar acción: el asistente) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 338.3 Td (necesita tu aprobación para continuar' ->) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 325.5 Td (Confirmar / Descartar.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 651.0 307.8 Td (>> Herramienta prohibida:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 294.7 Td (En 'Pedir borrar una multa', bloquea) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 281.9 Td (anular_multa_ant con) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 269.1 Td (HerramientaNoPermitidaError.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 651.0 251.4 Td (>> Documento envenenado:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 238.3 Td (En 'Cruzar semáforo en rojo', neutraliza) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 225.5 Td (el fragmento malicioso y mantiene la multa) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 212.7 Td (oficial \($144.60\).) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 651.0 195.0 Td (>> Simulador Vial:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 181.9 Td (Escenarios de máximo 2 frases con) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 169.1 Td (evaluación legal inmediata.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Contingencia lista: «La plataforma está despertando; mientras tanto, esta es la grabación de hoy» \(video 2 min\).) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 3 / 8) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 6279 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 216.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 3 · MIN 05:00 A 07:00 \(2 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 264.0 498.0 210.4 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 273.0 505.0 Td (ARQUITECTURA Y DATOS EN PRODUCCIÓN) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 790.0 498.0 130.0 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 800.0 504.7 Td (Expone: Fausto Cando) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (3. Arquitectura del Sistema y Almacenamiento \(ADR-0003\)) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Contenedor Docker en Google Cloud Run \(g8-vial, 2 GiB RAM\) con Agente Pydantic y ChromaDB embebido.) Tj ET
+1.00 w 0.040 0.080 0.140 rg 0.060 0.550 0.400 RG 40.0 370.0 205.0 50.0 re B
+BT /F2 10.2 Tf 0.200 0.830 0.600 rg 50.0 401.8 Td (1. Frontend React + TS) Tj ET
+BT /F1 8.8 Tf 0.800 0.850 0.920 rg 50.0 385.2 Td (SPA estática · Sesión UUID) Tj ET
+BT /F2 12.0 Tf 0.980 0.750 0.140 rg 250.0 392.0 Td (->) Tj ET
+1.00 w 0.040 0.080 0.140 rg 0.060 0.550 0.400 RG 265.0 370.0 205.0 50.0 re B
+BT /F2 10.2 Tf 0.200 0.830 0.600 rg 275.0 401.8 Td (2. FastAPI \(Cloud Run\)) Tj ET
+BT /F1 8.8 Tf 0.800 0.850 0.920 rg 275.0 385.2 Td (/chat · /escenarios · /health) Tj ET
+BT /F2 12.0 Tf 0.980 0.750 0.140 rg 475.0 392.0 Td (->) Tj ET
+1.00 w 0.040 0.080 0.140 rg 0.060 0.550 0.400 RG 490.0 370.0 205.0 50.0 re B
+BT /F2 10.2 Tf 0.200 0.830 0.600 rg 500.0 401.8 Td (3. Agente Tool Calling) Tj ET
+BT /F1 8.8 Tf 0.800 0.850 0.920 rg 500.0 385.2 Td (Groq/Gemini · Tope 6 vueltas) Tj ET
+BT /F2 12.0 Tf 0.980 0.750 0.140 rg 700.0 392.0 Td (->) Tj ET
+1.00 w 0.040 0.080 0.140 rg 0.060 0.550 0.400 RG 715.0 370.0 205.0 50.0 re B
+BT /F2 10.2 Tf 0.200 0.830 0.600 rg 725.0 401.8 Td (4. ChromaDB + Python) Tj ET
+BT /F1 8.8 Tf 0.800 0.850 0.920 rg 725.0 385.2 Td (641 vectores · SBU $482.00) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 432.0 296.0 re B
+0.063 0.725 0.506 rg 40.0 60.0 3.5 296.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 55.0 333.8 Td (AGENTE CONTROLADO) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 315.0 Td (6 Herramientas Permitidas \(Pydantic extra='forbid'\)) Tj ET
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 295.2 Td (buscar_normativa_rag) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 295.1 Td (Búsqueda vectorial Top-5 en ChromaDB \(solo vigentes\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 289.0 m 455.0 289.0 l S
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 273.2 Td (identificar_contravencion) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 273.1 Td (Cruza artículo COIP contra el catálogo oficial JSON.) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 267.0 m 455.0 267.0 l S
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 251.2 Td (calcular_sancion) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 251.1 Td (Multiplica % SBU x $482.00 USD y puntos en Python.) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 245.0 m 455.0 245.0 l S
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 229.2 Td (verificar_cita_y_seguridad) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 229.1 Td (Valida cita en fragmentos y neutraliza inyecciones.) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 223.0 m 455.0 223.0 l S
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 207.2 Td (registrar_progreso) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 207.1 Td (Actualiza métricas de sesión tras confirmación.) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 201.0 m 455.0 201.0 l S
+BT /F3 8.8 Tf 0.200 0.830 0.600 rg 55.0 185.2 Td (ajustar_dificultad) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 215.0 185.1 Td (Recomienda nivel según desempeño \(>=80% / <50%\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 179.0 m 455.0 179.0 l S
+BT /F2 8.2 Tf 0.980 0.450 0.520 rg 55.0 159.8 Td (Fuera de alcance bloqueadas: anular_multa_ant, modificar_puntos_licencia, emitir_fallo_judicial) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 488.0 60.0 432.0 296.0 re B
+0.650 0.550 0.980 rg 488.0 60.0 3.5 296.0 re f
+BT /F2 8.2 Tf 0.650 0.550 0.980 rg 503.0 333.8 Td (PERSISTENCIA Y DECISIONES) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 503.0 315.0 Td (Dónde viven los datos en producción \(ADR-0003\)) Tj ET
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 295.0 Td (Índice RAG \(641 vectores\)) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 295.1 Td (Dentro de la imagen Docker \(solo lectura\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 289.0 m 905.0 289.0 l S
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 273.0 Td (Documentos COIP / LOTTTSV) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 273.1 Td (Dentro de la imagen Docker \(solo lectura\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 267.0 m 905.0 267.0 l S
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 251.0 Td (Configuración y SBU \($482\)) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 251.1 Td (Archivos JSON en imagen \(solo lectura\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 245.0 m 905.0 245.0 l S
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 229.0 Td (Escenarios y progreso activo) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 229.1 Td (Memoria RAM \(se pierden al reiniciar; aceptado\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 223.0 m 905.0 223.0 l S
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 207.0 Td (Historial / Datos personales) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 207.1 Td (No se almacenan \(privacidad por diseño\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 201.0 m 905.0 201.0 l S
+BT /F2 9.0 Tf 0.980 0.750 0.140 rg 503.0 185.0 Td (Métricas operativas LLM) Tj ET
+BT /F1 8.9 Tf 0.840 0.880 0.930 rg 678.0 185.1 Td (Cloud Logging \(latencia y estado, sin PII\).) Tj ET
+0.50 w 0.120 0.160 0.240 RG 503.0 179.0 m 905.0 179.0 l S
+BT /F2 8.2 Tf 0.200 0.830 0.600 rg 503.0 159.8 Td (¿Por qué en la imagen? Descartamos BD vectorial paga; logra arranque de 12 s y costo $0 en reposo.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Alternativa descartada: Pinecone/Cloud SQL externo -> Incluir 641 vectores en la imagen evita red extra y costos fijos.) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 4 / 8) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 5671 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 221.6 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 4A · MIN 07:00 A 08:00 \(1 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 269.6 498.0 238.4 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 278.6 505.0 Td (EVIDENCIAS · EVALUACIÓN RAG VS SEMANA 3) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 779.2 498.0 140.8 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 789.2 504.7 Td (Expone: Isidoro Guaman) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (4. Evaluación Cuantitativa del RAG y Agente \(docs/07-evaluacion.md\)) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Evaluado con python eval/run_eval.py sobre 2 bancos de 20 casos \(referencia e independiente sin números de artículos\).) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 432.0 362.0 re B
+0.063 0.725 0.506 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 55.0 399.8 Td (RESULTADOS VERIFICABLES) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (Métricas alcanzadas en ambos bancos \(40 casos\)) Tj ET
+BT /F2 8.5 Tf 0.580 0.640 0.720 rg 55.0 363.5 Td (MÉTRICA) Tj ET
+BT /F2 8.5 Tf 0.580 0.640 0.720 rg 235.0 363.5 Td (META) Tj ET
+BT /F2 8.5 Tf 0.580 0.640 0.720 rg 300.0 363.5 Td (REF \(20\)) Tj ET
+BT /F2 8.5 Tf 0.580 0.640 0.720 rg 380.0 363.5 Td (INDEP \(20\)) Tj ET
+0.80 w 0.200 0.270 0.380 RG 55.0 358.0 m 455.0 358.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 340.8 Td (Hit@1 \(Artículo Top-1\)) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 341.0 Td (>= 80%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 340.8 Td (87.5% \(14/16\)) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 340.8 Td (87.5% \(14/16\)) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 335.0 m 455.0 335.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 315.8 Td (Hit@5 \(Artículo Top-5\)) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 316.0 Td (>= 90%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 315.8 Td (100.0% \(16/16\)) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 315.8 Td (100.0% \(16/16\)) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 310.0 m 455.0 310.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 290.8 Td (Regla de Silencio) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 291.0 Td (>= 90%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 290.8 Td (100.0% \(4/4\)) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 290.8 Td (100.0% \(4/4\)) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 285.0 m 455.0 285.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 265.8 Td (Escenarios válidos COIP) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 266.0 Td (>= 90%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 265.8 Td (100.0%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 265.8 Td (100.0%) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 260.0 m 455.0 260.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 240.8 Td (Cálculo SBU \($482.00\)) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 241.0 Td (100%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 240.8 Td (100.0%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 240.8 Td (100.0%) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 235.0 m 455.0 235.0 l S
+BT /F2 9.2 Tf 0.950 0.970 0.990 rg 55.0 215.8 Td (Tool Calling Pydantic) Tj ET
+BT /F3 9.0 Tf 0.750 0.800 0.860 rg 235.0 216.0 Td (100%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 300.0 215.8 Td (100.0%) Tj ET
+BT /F3 9.2 Tf 0.200 0.830 0.600 rg 380.0 215.8 Td (100.0%) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 210.0 m 455.0 210.0 l S
+BT /F1 9.2 Tf 0.980 0.750 0.140 rg 55.0 184.8 Td (Ambos bancos superan todos los umbrales de la rúbrica sin) Tj ET
+BT /F1 9.2 Tf 0.980 0.750 0.140 rg 55.0 171.8 Td (depender de palabras clave quemadas.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 488.0 60.0 432.0 362.0 re B
+0.960 0.620 0.040 rg 488.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 503.0 399.8 Td (DIAGNÓSTICO Y MEJORA) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 503.0 381.0 Td (Evolución técnica frente a la Semana 3) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 503.0 364.2 Td (>> Limpieza de 153 fragmentos huérfanos:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 351.1 Td (De 794 artículos brutos, filtramos encabezados vacíos y textos) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 338.3 Td (derogados para indexar 641 artículos vigentes.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 503.0 320.6 Td (>> Embeddings multilingual-e5-small:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 307.5 Td (Uso de prefijos 'query:' y 'passage:' con chunking de 900) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 294.7 Td (caracteres y overlap de 150.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 503.0 277.0 Td (>> Tesauro sin números de artículos:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 263.9 Td (Eliminamos referencias directas a 'Art. 389' en el tesauro) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 251.1 Td (para probar recuperación semántica genuina.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 503.0 233.4 Td (>> Anclas de dominio vial:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 220.3 Td (Filtro semántico que evita que preguntas culinarias, laborales) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 207.5 Td (o médicas crucen el umbral de 0.45.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Evidencia en repositorio: docs/07-evaluacion.md, eval/resultados.json y eval/resultados_finales.json) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 5 / 8) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 5115 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 221.6 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 4B · MIN 08:00 A 09:00 \(1 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 269.6 498.0 227.2 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 278.6 505.0 Td (PRUEBAS EN LA URL Y PIPELINE EN VERDE) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 779.2 498.0 140.8 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 789.2 504.7 Td (Expone: Isidoro Guaman) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (5. Pruebas Funcionales contra Cloud Run y CI/CD) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Validación automatizada en GitHub Actions \(.github/workflows/ci-cd.yml\) y smoke tests contra la URL pública.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 432.0 362.0 re B
+0.960 0.620 0.040 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 55.0 399.8 Td (6/6 CASOS EN CLOUD RUN) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (Pruebas funcionales contra la URL \(tests/smoke.py\)) Tj ET
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 359.2 Td (1. [salud] GET /health) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 359.1 Td (200 OK · 641 fragmentos) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 359.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 353.0 m 455.0 353.0 l S
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 335.2 Td (2. [caso 1] POST /chat \(semáforo\)) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 335.1 Td (200 OK · Cita Art. 389) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 335.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 329.0 m 455.0 329.0 l S
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 311.2 Td (3. [caso 2] POST /chat \(celular\)) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 311.1 Td (200 OK · Cita Art. 391) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 311.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 305.0 m 455.0 305.0 l S
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 287.2 Td (4. [fuera] POST /chat \(fuera tema\)) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 287.1 Td (200 OK · Se abstiene) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 287.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 281.0 m 455.0 281.0 l S
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 263.2 Td (5. [inyeccion] POST /chat \(ataque\)) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 263.1 Td (200 OK · Bloquea ataque) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 263.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 257.0 m 455.0 257.0 l S
+BT /F3 8.8 Tf 0.950 0.970 0.990 rg 55.0 239.2 Td (6. [invalida] POST /chat \(vacía\)) Tj ET
+BT /F1 8.9 Tf 0.780 0.830 0.900 rg 245.0 239.1 Td (422 Unprocessable) Tj ET
+BT /F2 9.0 Tf 0.200 0.830 0.600 rg 410.0 239.0 Td (PASA) Tj ET
+0.50 w 0.120 0.160 0.240 RG 55.0 233.0 m 455.0 233.0 l S
+0.80 w 0.080 0.120 0.080 rg 0.060 0.550 0.400 RG 55.0 176.0 400.0 42.0 re B
+BT /F3 9.6 Tf 0.200 0.830 0.600 rg 68.0 204.4 Td (RESULTADO REGISTRADO: 6/6 pasan · p95 = 49.2 s) Tj ET
+BT /F1 8.8 Tf 0.980 0.750 0.140 rg 68.0 189.2 Td (Arranque en frío medido en Cloud Run: 12 s) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 488.0 60.0 432.0 362.0 re B
+0.063 0.725 0.506 rg 488.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 503.0 399.8 Td (AUTOMATIZACIÓN ANTES DE DESPLEGAR) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 503.0 381.0 Td (Pipeline CI/CD en Verde \(GitHub Actions\)) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 364.2 Td (>> 1. Escaneo de secretos \(Gitleaks\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 351.1 Td (Verifica en cada push que no existan claves API en el código) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 338.3 Td (ni en el historial Git.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 320.6 Td (>> 2. 72 Pruebas con Pytest \(pytest -q\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 307.5 Td (Ejecuta pruebas unitarias y de integración usando el servidor) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 294.7 Td (simulado local sin gastar cuota.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 277.0 Td (>> 3. Evaluación del RAG \(eval/run_eval.py\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 263.9 Td (Comprueba que Hit@1, Hit@5 y Regla de Silencio superen la) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 251.1 Td (rúbrica antes de construir la imagen.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 233.4 Td (>> 4. Despliegue a Cloud Run + Smoke Test:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 220.3 Td (Publica en el servicio g8-vial \(us-central1\) y ejecuta) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 207.5 Td (automáticamente tests/smoke.py contra la URL.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Corrida en verde: github.com/edudigital2019/simulador-situaciones-viales/actions/runs/42325256229) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 6 / 8) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 5351 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 216.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 5 · MIN 09:00 A 10:00 \(1 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 264.0 498.0 182.4 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 273.0 505.0 Td (SEGURIDAD Y FALLAS DEL MODELO) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 790.0 498.0 130.0 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 800.0 504.7 Td (Expone: Fausto Cando) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (6. Protección de Credenciales y Resiliencia ante Fallas) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Dónde viven las claves y qué ocurre exactamente cuando el proveedor de IA falla o recibe inyecciones.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 284.0 362.0 re B
+0.063 0.725 0.506 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 55.0 399.8 Td (1. CERO CLAVES EXPUESTAS) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (Dónde viven las claves) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 364.2 Td (>> Variables protegidas en GCP:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 351.1 Td (GROQ_API_KEY y GEMINI_API_KEY viven solo) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 338.3 Td (en la configuración segura de Cloud Run.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 320.6 Td (>> GitHub Secrets en CI/CD:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 307.5 Td (GCP_PROJECT_ID y GCP_SA_KEY están cifrados) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 294.7 Td (en el repositorio y nunca se imprimen en) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 281.9 Td (logs.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 55.0 264.2 Td (>> Plantilla .env.example limpia:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 251.1 Td (El archivo .env local está en .gitignore;) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 238.3 Td (ni el Dockerfile ni el historial contienen) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 225.5 Td (secretos.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 338.0 60.0 284.0 362.0 re B
+0.960 0.620 0.040 rg 338.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 353.0 399.8 Td (2. ESTABILIDAD LLM \(APP/SERVICES/LLM.PY\)) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 353.0 381.0 Td (Qué pasa si el modelo falla) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 364.2 Td (>> Tiempo límite \(Timeout\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 351.1 Td (Cada llamada aplica timeout configurable) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 338.3 Td (\(12-30 s\) para no colgar peticiones.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 320.6 Td (>> Reintentos con espera creciente:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 307.5 Td (Backoff exponencial ante errores) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 294.7 Td (transitorios 429 \(rate limit\) o 5xx.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 277.0 Td (>> Conmutación en 17 ms:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 263.9 Td (Al configurar un modelo inexistente \(error) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 251.1 Td (404\), el proveedor de respaldo contestó en) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 238.3 Td (17 ms sin error 500.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 353.0 220.6 Td (>> Mensaje claro al usuario:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 207.5 Td (Si todo falla, devuelve HTTP 503 con) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 363.0 194.7 Td (Retry-After y cuenta regresiva.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 636.0 60.0 284.0 362.0 re B
+0.950 0.250 0.370 rg 636.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.950 0.250 0.370 rg 651.0 399.8 Td (3. DEFENSA EN CAPAS) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 651.0 381.0 Td (Anti-Inyección y Privacidad) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 651.0 364.2 Td (>> Inyección en usuario y RAG:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 351.1 Td (verificar_cita_y_seguridad detecta 'ignora) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 338.3 Td (las reglas' tanto en la pregunta como en) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 325.5 Td (documentos envenenados.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 651.0 307.8 Td (>> Límites de entrada y tasa:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 294.7 Td (Tope de 500 caracteres en /chat,) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 281.9 Td (max_tokens de salida y limitador de) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 269.1 Td (peticiones en /escenarios.) Tj ET
+BT /F2 9.8 Tf 0.980 0.450 0.520 rg 651.0 251.4 Td (>> Logs sin PII ni secretos:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 238.3 Td (Solo se registra latencia, proveedor y) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 225.5 Td (código de estado; nunca preguntas ni) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 661.0 212.7 Td (claves.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (Aviso del docente en minuto 10 \(«quedan dos minutos»\) -> Paso inmediato a Limitaciones y Cierre.) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 7 / 8) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 4681 >>
+stream
+0.024 0.035 0.067 rg 0.0 0.0 960.0 540.0 re f
+0.063 0.725 0.506 rg 0.0 536.0 960.0 4.0 re f
+0.90 w 0.040 0.160 0.140 rg 0.060 0.450 0.320 RG 40.0 498.0 216.0 20.0 re B
+BT /F2 8.5 Tf 0.200 0.830 0.600 rg 49.0 505.0 Td (TRAMO 6 · MIN 10:00 A 12:00 \(2 MIN\)) Tj ET
+0.90 w 0.180 0.130 0.040 rg 0.550 0.380 0.080 RG 264.0 498.0 210.4 20.0 re B
+BT /F2 8.5 Tf 0.980 0.750 0.140 rg 273.0 505.0 Td (LIMITACIONES CONOCIDAS Y USO DE IA) Tj ET
+0.80 w 0.070 0.100 0.160 rg 0.200 0.270 0.380 RG 779.2 498.0 140.8 20.0 re B
+BT /F2 8.8 Tf 0.200 0.830 0.600 rg 789.2 504.7 Td (Expone: Isidoro Guaman) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 488.0 m 920.0 488.0 l S
+BT /F2 21.0 Tf 0.970 0.980 0.990 rg 40.0 457.0 Td (7. Limitaciones Conocidas, Uso de IA y Cierre) Tj ET
+BT /F1 10.8 Tf 0.580 0.640 0.720 rg 40.0 440.2 Td (Transparencia técnica sobre el alcance actual \(README.md / ADR-0003\) y auditoría del trabajo con IA.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 40.0 60.0 432.0 362.0 re B
+0.960 0.620 0.040 rg 40.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.960 0.620 0.040 rg 55.0 399.8 Td (TRANSPARENCIA TÉCNICA) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 55.0 381.0 Td (5 Limitaciones Conocidas en Producción) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 55.0 364.2 Td (>> 1. Estado efímero en memoria:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 351.1 Td (Escenarios y progreso viven en RAM y se pierden al reiniciar) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 338.3 Td (Cloud Run. Se acepta por ser práctica educativa anónima.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 55.0 320.6 Td (>> 2. Respaldo simulado local:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 307.5 Td (El fallback en producción es el proveedor simulado) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 294.7 Td (determinista, priorizando disponibilidad 100% sobre variedad.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 55.0 277.0 Td (>> 3. Rate limiting en memoria:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 263.9 Td (/escenarios limita por sesión en RAM y /chat corta a 500) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 251.1 Td (caracteres; escalar a varias instancias requeriría Redis.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 55.0 233.4 Td (>> 4. Arranque en frío \(12 s\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 220.3 Td (Con min-instances=0, despertar el contenedor y cargar el) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 207.5 Td (modelo E5 tarda ~12 s.) Tj ET
+BT /F2 9.8 Tf 0.980 0.750 0.140 rg 55.0 189.8 Td (>> 5. Alcance educativo:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 176.7 Td (No sustituye el portal oficial de la ANT ni constituye) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 65.0 163.9 Td (asesoría jurídica.) Tj ET
+0.90 w 0.047 0.071 0.125 rg 0.140 0.200 0.300 RG 488.0 60.0 432.0 362.0 re B
+0.063 0.725 0.506 rg 488.0 60.0 3.5 362.0 re f
+BT /F2 8.2 Tf 0.063 0.725 0.506 rg 503.0 399.8 Td (DEFENSA ANTE EL TRIBUNAL \(MIN 12-15\)) Tj ET
+BT /F2 13.0 Tf 0.970 0.980 0.990 rg 503.0 381.0 Td (Auditoría de Uso de IA Generativa) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 364.2 Td (>> ¿Qué se generó con apoyo de IA?:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 351.1 Td (Borradores de esquemas Pydantic, plantillas de pruebas) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 338.3 Td (unitarias, estructura del frontend React y documentación base.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 320.6 Td (>> ¿Qué revisó y corrigió el equipo?:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 307.5 Td (1\) Filtrado de 153 fragmentos huérfanos del corpus; 2\)) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 294.7 Td (Separación entre puntos COIP y reforma RO 512 \(2021\); 3\)) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 281.9 Td (Simplificación visual para el ciudadano.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 264.2 Td (>> ¿Qué pruebas lo respaldan?:) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 251.1 Td (72 pruebas unitarias/integración en pytest, 40 casos RAG en 2) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 238.3 Td (bancos \(87.5% Hit@1, 100% Hit@5\) y 6/6 smoke tests en Cloud) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 225.5 Td (Run.) Tj ET
+BT /F2 9.8 Tf 0.200 0.830 0.600 rg 503.0 207.8 Td (>> Listos para preguntas \(Min 12-15\):) Tj ET
+BT /F1 9.4 Tf 0.800 0.840 0.880 rg 513.0 194.7 Td (Fausto Cando · Isidoro Guaman · Luis Naranjo - Grupo 8.) Tj ET
+0.70 w 0.140 0.190 0.280 RG 40.0 38.0 m 920.0 38.0 l S
+BT /F1 8.8 Tf 0.450 0.520 0.610 rg 40.0 19.2 Td (¡Muchas gracias al tribunal! · Grupo 8 \(Fausto Cando, Isidoro Guaman, Luis Naranjo\) · UNIANDES 2026) Tj ET
+BT /F2 8.8 Tf 0.580 0.640 0.720 rg 845.0 19.2 Td (Diapositiva 8 / 8) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 960 540] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 20 0 R >>
+endobj
+xref
+0 22
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000171 00000 n 
+0000000268 00000 n 
+0000000370 00000 n 
+0000000470 00000 n 
+0000005146 00000 n 
+0000005292 00000 n 
+0000010639 00000 n 
+0000010785 00000 n 
+0000016843 00000 n 
+0000016991 00000 n 
+0000023323 00000 n 
+0000023471 00000 n 
+0000029195 00000 n 
+0000029343 00000 n 
+0000034511 00000 n 
+0000034659 00000 n 
+0000040063 00000 n 
+0000040211 00000 n 
+0000044945 00000 n 
+trailer
+<< /Size 22 /Root 1 0 R >>
+startxref
+45093
+%%EOF

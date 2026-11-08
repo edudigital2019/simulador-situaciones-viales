@@ -1,7 +1,7 @@
 # 07 · Reporte de Evaluación del Sistema RAG y Agente
 **Caso N.° 08: Simulador Educativo de Situaciones Viales («Vía Segura»)**  
 **Seminario de Titulación Complexivo: Ingeniería de Software con IA Generativa — UNIANDES**  
-**Fecha de Evaluación:** Octubre 2026
+**Fecha de Evaluación:** 7 de noviembre de 2026
 
 ---
 
@@ -58,9 +58,24 @@ El segundo banco evalúa 20 consultas independientes sobre artículos distintos 
 ## 4. Diagnóstico Técnico y Lecciones Aprendidas
 
 1. **Recuperación Vectorial Real sin Sesgo:**
-   - Se indexaron los 641 artículos en `chroma_db/chroma.sqlite3` con `SentenceTransformer("intfloat/multilingual-e5-small")`.
+   - Se distribuyen 641 fragmentos en `chroma_db/normativa_collection.json` con embeddings de `intfloat/multilingual-e5-small`.
    - Se eliminaron del tesauro todas las referencias directas a números de artículos y se implementó normalización por longitud documental para evitar que glosarios extensos del Reglamento desplacen a los artículos punitivos del COIP.
 2. **Tool Calling con Esquemas Pydantic y Rol `tool`:**
    - El agente (`app/services/agente.py`) define esquemas Pydantic estrictos (`extra="forbid"`) para cada herramienta, los expone en formato `tools` de OpenAI, despacha las llamadas mediante `despachar_herramienta` y registra los mensajes `assistant` (`tool_calls`) y `tool` (`tool_call_id`) en un ciclo controlado con tope de 6 vueltas.
 3. **Integración Continua (CI):**
-   - El flujo `.github/workflows/ci.yml` ejecuta automáticamente en cada push/PR las pruebas unitarias (`pytest`), la evaluación RAG sobre ambos bancos (`python eval/run_eval.py`) y la compilación del frontend React (`npm run build`).
+   - El flujo `.github/workflows/ci-cd.yml` ejecuta automáticamente en cada push/PR las pruebas unitarias (`pytest`), la evaluación RAG sobre ambos bancos (`python eval/run_eval.py`) y la compilación del frontend React (`npm run build`).
+
+---
+
+## 5. Comparación explícita con la Semana 3
+
+| Métrica | Semana 3 | Evaluación final | Interpretación |
+|---|:---:|:---:|---|
+| Banco evaluado | 20 casos de referencia | 20 referencia + 20 independientes | La evaluación final duplica la muestra e incorpora redacciones no vistas. |
+| Hit@1 | 100% (16/16) | 87.5% (14/16) en ambos bancos | El resultado final es más conservador porque elimina números de artículos del tesauro y expone dos confusiones reales de ranking. |
+| Hit@5 | 100% (16/16) | 100% (16/16) en ambos bancos | El artículo correcto permanece siempre entre los cinco primeros. |
+| Regla de Silencio | 100% (4/4) | 100% (4/4) en ambos bancos | Se mantiene la abstención en consultas fuera del dominio. |
+| Cálculo SBU | 100% | 100% | Continúa delegado a Python y no al LLM. |
+| Control de herramientas | Lista inicial | 6 tools, esquemas estrictos y tope de 6 vueltas | Se añade trazabilidad del ciclo y bloqueo de herramientas fuera de alcance. |
+
+La reducción de Hit@1 frente al reporte inicial no se oculta ni se interpreta como una mejora artificial: surge de una evaluación final más exigente y sin referencias directas a números de artículos. Como defensa adicional, el agente cruza la conducta con la tabla canónica y prioriza la contravención identificada sobre una reformulación incorrecta del LLM.

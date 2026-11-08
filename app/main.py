@@ -80,7 +80,8 @@ app.add_middleware(
 )
 
 _lim = cargar_parametros()["limite_tasa"]
-limitador = LimitadorTasa(_lim["capacidad"], _lim["recarga_por_segundo"])
+limitador_escenarios = LimitadorTasa(_lim["capacidad"], _lim["recarga_por_segundo"])
+limitador_chat = LimitadorTasa(_lim["capacidad"], _lim["recarga_por_segundo"])
 
 _escenarios: OrderedDict[str, tuple[str, EscenarioVialSchema, Contravencion]] = OrderedDict()
 _candado = threading.Lock()
@@ -159,12 +160,22 @@ def buscar_rag(
 @app.post("/chat")
 def chat_normativo(
     solicitud: SolicitudChat,
+    sesion: str = Depends(clave_sesion),
     llm: ClienteLLM = Depends(obtener_llm),
 ):
     try:
         pregunta = solicitud.obtener_pregunta()
     except ValueError as e:
         raise Problema(422, "Pregunta inválida", str(e))
+
+    espera = limitador_chat.consumir(sesion)
+    if espera:
+        raise Problema(
+            429,
+            "Demasiadas solicitudes",
+            f"Has realizado muchas consultas normativas seguidas. Intenta de nuevo en {int(espera)} s.",
+            cabeceras={"Retry-After": str(int(espera))},
+        )
 
     fragmentos_extra = None
     if solicitud.incluir_documento_envenenado_demo:
@@ -200,7 +211,7 @@ def chat_normativo(
 @app.post("/escenarios", response_model=EscenarioPublico)
 def crear_escenario(solicitud: SolicitudEscenario, sesion: str = Depends(clave_sesion),
                     llm: ClienteLLM = Depends(obtener_llm)):
-    espera = limitador.consumir(sesion)
+    espera = limitador_escenarios.consumir(sesion)
     if espera:
         raise Problema(
             429,

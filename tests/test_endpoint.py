@@ -1,7 +1,9 @@
 import json as _json
 
-from app.main import Problema, _problema, app, crear_escenario, evaluar, health, obtener_llm, progreso
-from app.schemas import EscenarioVialSchema, OpcionEscenario, SolicitudEscenario, SolicitudEvaluacion
+import pytest
+
+from app.main import Problema, _problema, app, chat_normativo, crear_escenario, evaluar, health, obtener_llm, progreso
+from app.schemas import EscenarioVialSchema, OpcionEscenario, SolicitudChat, SolicitudEscenario, SolicitudEvaluacion
 from app.services.llm import ProveedorNoDisponible, Resultado
 
 
@@ -164,3 +166,22 @@ def test_evaluacion_registra_progreso_usuario():
     assert r_eval["progreso"]["aciertos"] >= 1
     prog = client.get("/progreso", headers=headers).json()
     assert prog["total_evaluados"] >= 1 and prog["aciertos"] >= 1
+
+
+def test_chat_aplica_limite_de_tasa_y_retry_after(monkeypatch):
+    class LimitadorAgotado:
+        def consumir(self, clave):
+            assert clave == "sesion-chat-prueba"
+            return 12.0
+
+    monkeypatch.setattr("app.main.limitador_chat", LimitadorAgotado())
+
+    with pytest.raises(Problema) as capturado:
+        chat_normativo(
+            SolicitudChat(pregunta="¿Qué sanción aplica por cruzar el semáforo en rojo?"),
+            sesion="sesion-chat-prueba",
+            llm=object(),
+        )
+
+    assert capturado.value.estado == 429
+    assert capturado.value.cabeceras == {"Retry-After": "12"}

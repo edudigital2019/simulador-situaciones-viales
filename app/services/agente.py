@@ -336,9 +336,13 @@ def _sintetizar_respuesta_final(pregunta: str, ctx: dict[str, Any]) -> str:
     if not fragmentos:
         return MENSAJE_ABSTENCION_RAG
 
-    top = fragmentos[0]
-    cita_oficial = f"{top.get('documento', 'COIP')}, Art. {top.get('articulo', '')}"
     sancion = ctx.get("sancion_calculada")
+    articulo_sancion = _numero_articulo_sancion(sancion)
+    top = next(
+        (f for f in fragmentos if articulo_sancion and str(f.get("articulo")) == articulo_sancion),
+        fragmentos[0],
+    )
+    cita_oficial = f"{top.get('documento', 'COIP')}, Art. {top.get('articulo', '')}"
     if sancion:
         texto = (
             f"Según el {cita_oficial} ({sancion['articulo']} · {sancion['clase']}), "
@@ -354,6 +358,13 @@ def _sintetizar_respuesta_final(pregunta: str, ctx: dict[str, Any]) -> str:
 
     extracto = top["texto"][:340].rstrip() + ("..." if len(top["texto"]) > 340 else "")
     return f"Según el {cita_oficial}: «{extracto}»"
+
+
+def _numero_articulo_sancion(sancion: dict[str, Any] | None) -> str | None:
+    if not sancion:
+        return None
+    coincidencia = re.search(r"\bArt\.\s*(\d+)", str(sancion.get("articulo", "")), re.I)
+    return coincidencia.group(1) if coincidencia else None
 
 
 def _planificador_modelo_tool_calling(
@@ -450,7 +461,13 @@ def _planificador_modelo_tool_calling(
 
     if "verificar_cita_y_seguridad" not in herramientas_ejecutadas:
         arts_disp = [f["articulo"] for f in fragmentos]
-        texto_top = fragmentos[0]["texto"] if fragmentos else ""
+        articulo_sancion = _numero_articulo_sancion(ctx.get("sancion_calculada"))
+        articulo_a_verificar = articulo_sancion or mejor_art or "ninguno"
+        fragmento_verificacion = next(
+            (f for f in fragmentos if str(f.get("articulo")) == articulo_a_verificar),
+            fragmentos[0] if fragmentos else None,
+        )
+        texto_top = fragmento_verificacion["texto"] if fragmento_verificacion else ""
         return MensajeModelo(
             role="assistant",
             content=None,
@@ -461,7 +478,7 @@ def _planificador_modelo_tool_calling(
                         name="verificar_cita_y_seguridad",
                         arguments=json.dumps(
                             {
-                                "articulo": mejor_art or "ninguno",
+                                "articulo": articulo_a_verificar,
                                 "articulos_recuperados": arts_disp,
                                 "texto_fragmento": texto_top,
                             },
@@ -623,6 +640,18 @@ def ejecutar_agente_consulta(
             nombre_fn = tc.function.name
             args_str = tc.function.arguments
 
+            # El modelo puede reformular los argumentos de una tool. Para la
+            # recuperación normativa usamos siempre la pregunta original, de
+            # modo que la fuente no dependa de una paráfrasis generativa.
+            if nombre_fn == "buscar_normativa_rag":
+                try:
+                    args_rag = json.loads(args_str) if isinstance(args_str, str) else dict(args_str)
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    args_rag = {}
+                args_rag["consulta"] = pregunta
+                args_rag["top_k"] = min(max(int(args_rag.get("top_k", 5)), 1), 10)
+                args_str = json.dumps(args_rag, ensure_ascii=False)
+
             try:
                 resultado_tool = despachar_herramienta(nombre_fn, args_str, contexto=ctx)
             except HerramientaNoPermitidaError:
@@ -731,9 +760,14 @@ def ejecutar_agente_consulta(
         "fragmentos": [],
     }
     fragmentos = rag_res.get("fragmentos") or []
-    mejor_art = fragmentos[0]["articulo"] if fragmentos else "ninguno"
-    mejor_dist = float(rag_res.get("mejor_distancia", 0.85))
     sancion_dict = ctx.get("sancion_calculada")
+    articulo_sancion = _numero_articulo_sancion(sancion_dict)
+    fragmento_citado = next(
+        (f for f in fragmentos if articulo_sancion and str(f.get("articulo")) == articulo_sancion),
+        fragmentos[0] if fragmentos else None,
+    )
+    mejor_art = fragmento_citado["articulo"] if fragmento_citado else "ninguno"
+    mejor_dist = float(rag_res.get("mejor_distancia", 0.85))
     verif = ctx.get("verificacion") or {}
 
     es_disputa = es_consulta_disputa(pregunta)
@@ -756,7 +790,7 @@ def ejecutar_agente_consulta(
         )
     else:
         tipo_resp = "con_fuente"
-        top_f = fragmentos[0]
+        top_f = fragmento_citado
         cita_oficial = f"{top_f.get('documento', 'COIP')}, Art. {top_f.get('articulo', '')}"
         citas_lista = [cita_oficial]
         resumen_cls = (
