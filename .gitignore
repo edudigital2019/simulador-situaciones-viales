@@ -14,9 +14,11 @@ logs/
 # Artefactos personales generados localmente
 output/
 tmp/
+.vs/
 # Node / Frontend
 node_modules/
 frontend/node_modules/
+frontend/dist/
 
 # Guias y material pesado de referencia
 docs/guias/

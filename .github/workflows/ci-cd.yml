@@ -86,6 +86,8 @@ jobs:
           service: ${{ env.SERVICIO }}
           region: ${{ env.REGION }}
           source: .
+          env_vars: |-
+            APP_VERSION=${{ github.sha }}
           flags: --allow-unauthenticated
 
       - name: Ejecutar pruebas de humo
