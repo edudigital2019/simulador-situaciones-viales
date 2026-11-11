@@ -3,9 +3,11 @@
 **Fecha:** 8 de noviembre de 2026  
 **Commit probado:** `d8a1931` (`feat: implementar bucle iterativo hibrido del agente`)  
 **Origen de la evidencia:** GitHub Actions, etapa `Ejecutar pruebas de humo`  
+**Enlace a la corrida verde de GitHub Actions (15/15):**  
+https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/42325256229
 **Servicio:** `g8-vial`  
 **Plataforma:** Google Cloud Run  
-**URL probada:** `https://g8-vial-scs2jmzzzq-uc.a.run.app`
+**URL probada:** `https://g8-vial-834435723683.us-central1.run.app/`
 
 La batería ampliada se ejecutó contra la URL pública actual. Cada caso de chat utilizó un `X-Session-ID` diferente para verificar la función correspondiente sin consumir artificialmente el balde de otra prueba.
 

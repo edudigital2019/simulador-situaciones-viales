@@ -168,8 +168,10 @@ async def _manejar_validacion(_: Request, e: RequestValidationError):
 
 
 def clave_sesion(request: Request) -> str:
-    sid = request.headers.get("X-Session-ID", "")
-    return sid.lower() if UUID_RE.match(sid) else f"ip:{request.client.host if request.client else 'desconocida'}"
+    ip = request.client.host if request.client else "desconocida"
+    sid = request.headers.get("X-Session-ID", "").strip().lower()
+    # Combina IP con sesion para evitar que rotar el UUID burle el rate limit
+    return f"{ip}:{sid}" if UUID_RE.match(sid) else f"ip:{ip}"
 
 
 @app.get("/health")

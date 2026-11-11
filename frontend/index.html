@@ -418,6 +418,33 @@
         50% { opacity: 0.95; }
       }
 
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .spin-animate {
+        animation: spin 0.85s linear infinite;
+      }
+
+      @keyframes shimmerSweep {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(240%); }
+      }
+
+      .shimmer-active {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .shimmer-active::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(5, 150, 105, 0.16) 50%, transparent 100%);
+        animation: shimmerSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+
       .skeleton-bar {
         background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
         border-radius: 10px;

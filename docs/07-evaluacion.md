@@ -72,7 +72,7 @@ El segundo banco evalúa 20 consultas independientes sobre artículos distintos 
 | Métrica | Semana 3 | Evaluación final | Interpretación |
 |---|:---:|:---:|---|
 | Banco evaluado | 20 casos de referencia | 20 referencia + 20 independientes | La evaluación final duplica la muestra e incorpora redacciones no vistas. |
-| Hit@1 | 100% (16/16) | 87.5% (14/16) en ambos bancos | El resultado final es más conservador porque elimina números de artículos del tesauro y expone dos confusiones reales de ranking. |
+| Hit@1 | 87.5% (14/16) | 87.5% (14/16) en ambos bancos | Se mantiene la precisión semántica pura sin números de artículo en el tesauro (87.5% en referencia e independiente). Las corridas preliminares con números de artículo alcanzaban 100%, pero la línea base oficial de Semana 3 cerró en 87.5%. |
 | Hit@5 | 100% (16/16) | 100% (16/16) en ambos bancos | El artículo correcto permanece siempre entre los cinco primeros. |
 | Regla de Silencio | 100% (4/4) | 100% (4/4) en ambos bancos | Se mantiene la abstención en consultas fuera del dominio. |
 | Cálculo SBU | 100% | 100% | Continúa delegado a Python y no al LLM. |

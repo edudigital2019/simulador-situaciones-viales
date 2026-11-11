@@ -10,7 +10,7 @@
 
 **Riesgo:** Solicitudes repetidas pueden consumir la cuota del proveedor.
 
-**Mitigación:** La entrada de `/chat` está limitada a 500 caracteres y la salida del modelo tiene un máximo configurable. `/escenarios` usa un limitador de tasa en memoria. Sigue pendiente aplicar un límite equivalente a `/chat` para un entorno con tráfico público.
+**Mitigación:** La entrada de `/chat` está limitada a 500 caracteres y la salida tiene un máximo configurable. Tanto `/chat` como `/escenarios` cuentan con limitador de tasa en memoria (HTTP 429 con cabecera `Retry-After`). La tasa se limita combinando la dirección IP y el identificador de sesión. Como limitación conocida de arquitectura sin base Redis externa, las peticiones se controlan en la memoria de cada instancia activa.
 
 ## Arranque en frío
 

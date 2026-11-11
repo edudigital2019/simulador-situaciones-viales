@@ -129,7 +129,7 @@ Se acepta perder los escenarios temporales porque el proyecto es una demostraci�
 ## Pruebas y evaluación
 
 ```bash
-# 74 pruebas unitarias y de integración con proveedor simulado
+# 79 casos de prueba (66 funciones pytest parametrizadas) con proveedor simulado
 python -m pytest -q
 
 # Evaluación del RAG

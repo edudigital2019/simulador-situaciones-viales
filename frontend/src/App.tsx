@@ -541,12 +541,8 @@ export default function App() {
       <div className="inst-ribbon">
         <div className="inst-ribbon-inner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-            <span style={{ display: 'inline-flex', borderRadius: '3px', overflow: 'hidden', border: '1px solid rgba(15,23,42,0.12)' }}>
-              <span style={{ width: '8px', height: '11px', background: '#eab308' }} />
-              <span style={{ width: '5px', height: '11px', background: '#1d4ed8' }} />
-              <span style={{ width: '5px', height: '11px', background: '#dc2626' }} />
-            </span>
-            <span style={{ fontWeight: 700, color: '#0f172a' }}>República del Ecuador</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669', display: 'inline-block', boxShadow: '0 0 0 3px rgba(5, 150, 105, 0.15)' }} />
+            <span style={{ fontWeight: 700, color: '#0f172a' }}>Proyecto Académico · Vía Segura</span>
             <span style={{ color: '#cbd5e1' }}>·</span>
             <span>Normativa Vial Vigente (COIP y LOTTTSV · RO 512)</span>
           </div>
@@ -916,7 +912,14 @@ export default function App() {
                         : 'Generar Escenario'}
                     </span>
                     <span className="btn-icon-wrap" style={{ color: estado === 'reintentar' ? '#475569' : '#ffffff' }}>
-                      <IconArrowUpRight />
+                      {estado === 'cargando' ? (
+                        <svg className="spin-animate" style={{ width: '15px', height: '15px' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                          <path d="M12 2a10 10 0 0 1 10 10" />
+                        </svg>
+                      ) : (
+                        <IconArrowUpRight />
+                      )}
                     </span>
                   </button>
                 </div>
@@ -964,15 +967,126 @@ export default function App() {
               </div>
             )}
 
-            {/* Skeleton Loading State */}
-            {estado === 'cargando' && !escenario && (
-              <div className="bezel-shell reveal-up">
-                <div className="bezel-core" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
-                  <div className="skeleton-bar" style={{ width: '240px', height: '22px' }} />
-                  <div className="skeleton-bar" style={{ width: '92%', height: '32px' }} />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
-                    {[1, 2, 3, 4].map((n) => (
-                      <div key={n} className="skeleton-bar" style={{ width: '100%', height: '58px', borderRadius: '16px' }} />
+            {/* Rich Animated Loading State with Pedagogical Stages */}
+            {estado === 'cargando' && (
+              <div className="bezel-shell reveal-up" style={{ borderColor: 'rgba(5, 150, 105, 0.28)' }}>
+                <div className="bezel-core" style={{
+                  padding: '2rem 2.2rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.25rem',
+                  background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+                }}>
+                  {/* Top Header with live pulsing radar & progress track */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span style={{
+                        position: 'relative',
+                        display: 'inline-flex',
+                        width: '10px',
+                        height: '10px',
+                        borderRadius: '50%',
+                        background: '#059669',
+                      }}>
+                        <span style={{
+                          position: 'absolute',
+                          inset: '-3px',
+                          borderRadius: '50%',
+                          background: '#059669',
+                          opacity: 0.45,
+                          animation: 'pulseOpacity 1.2s ease-in-out infinite',
+                        }} />
+                      </span>
+                      <span style={{
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        color: '#059669',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                      }}>
+                        Asistente de IA estructurando situación vial
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.74rem', color: '#64748b' }}>
+                      <svg className="spin-animate" style={{ width: '13px', height: '13px', color: '#059669' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                        <path d="M12 2a10 10 0 0 1 10 10" />
+                      </svg>
+                      <span className="tabular-nums">Consultando COIP y LOTTTSV...</span>
+                    </div>
+                  </div>
+
+                  {/* Shimmer Progress Track */}
+                  <div style={{
+                    width: '100%',
+                    height: '4px',
+                    borderRadius: '9999px',
+                    background: '#e2e8f0',
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}>
+                    <div className="shimmer-active" style={{
+                      width: '60%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #059669 0%, #10b981 100%)',
+                      borderRadius: '9999px',
+                    }} />
+                  </div>
+
+                  {/* Animated Scenario Skeleton with Context Pill */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.4rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <div className="skeleton-bar shimmer-active" style={{ width: '140px', height: '24px', borderRadius: '8px' }} />
+                      <div className="skeleton-bar shimmer-active" style={{ width: '90px', height: '24px', borderRadius: '8px' }} />
+                    </div>
+                    <div className="skeleton-bar shimmer-active" style={{ width: '96%', height: '36px', borderRadius: '12px' }} />
+                    <div className="skeleton-bar shimmer-active" style={{ width: '70%', height: '20px', borderRadius: '8px' }} />
+                  </div>
+
+                  {/* Shimmering Option Cards */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.6rem' }}>
+                    {[
+                      'A · Analizando legalidad según normativa vigente...',
+                      'B · Verificando causales y excepciones de tránsito...',
+                      'C · Contrastando con contravenciones de 4.ª a 7.ª clase...',
+                      'D · Calculando porcentaje SBU 2026 y reducción de puntos...',
+                    ].map((textoOpcion, idx) => (
+                      <div
+                        key={idx}
+                        className="skeleton-bar shimmer-active"
+                        style={{
+                          width: '100%',
+                          minHeight: '62px',
+                          borderRadius: '16px',
+                          padding: '1rem 1.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.85rem',
+                          background: 'rgba(241, 245, 249, 0.75)',
+                          border: '1px solid rgba(226, 232, 240, 0.8)',
+                        }}
+                      >
+                        <span style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          background: '#ffffff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: '#059669',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                          flexShrink: 0,
+                        }}>
+                          {['A', 'B', 'C', 'D'][idx]}
+                        </span>
+                        <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>
+                          {textoOpcion}
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -1400,15 +1514,138 @@ export default function App() {
                 >
                   <span>{cargandoChat ? 'Consultando...' : 'Consultar norma'}</span>
                   <span className="btn-icon-wrap" style={{ color: '#ffffff' }}>
-                    <IconArrowUpRight />
+                    {cargandoChat ? (
+                      <svg className="spin-animate" style={{ width: '15px', height: '15px' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                        <path d="M12 2a10 10 0 0 1 10 10" />
+                      </svg>
+                    ) : (
+                      <IconArrowUpRight />
+                    )}
                   </span>
                 </button>
               </div>
 
+              {/* Rich Animated Loading State for RAG Consultation */}
               {cargandoChat && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  <div className="skeleton-bar" style={{ width: '100%', height: '48px', borderRadius: '14px' }} />
-                  <div className="skeleton-bar" style={{ width: '100%', height: '140px', borderRadius: '18px' }} />
+                <div className="reveal-up" style={{
+                  background: 'linear-gradient(180deg, #ffffff 0%, #fffbeb 100%)',
+                  border: '1.5px solid rgba(217, 119, 6, 0.28)',
+                  borderRadius: '18px',
+                  padding: '1.85rem 2rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.15rem',
+                }}>
+                  {/* Top Header with live pulsing amber radar & progress track */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span style={{
+                        position: 'relative',
+                        display: 'inline-flex',
+                        width: '10px',
+                        height: '10px',
+                        borderRadius: '50%',
+                        background: '#d97706',
+                      }}>
+                        <span style={{
+                          position: 'absolute',
+                          inset: '-3px',
+                          borderRadius: '50%',
+                          background: '#d97706',
+                          opacity: 0.45,
+                          animation: 'pulseOpacity 1.2s ease-in-out infinite',
+                        }} />
+                      </span>
+                      <span style={{
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        color: '#d97706',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                      }}>
+                        Agente RAG analizando consulta normativa
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.74rem', color: '#78350f' }}>
+                      <svg className="spin-animate" style={{ width: '13px', height: '13px', color: '#d97706' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                        <path d="M12 2a10 10 0 0 1 10 10" />
+                      </svg>
+                      <span className="tabular-nums">Buscando en 641 fragmentos de ChromaDB...</span>
+                    </div>
+                  </div>
+
+                  {/* Shimmer Progress Track */}
+                  <div style={{
+                    width: '100%',
+                    height: '4px',
+                    borderRadius: '9999px',
+                    background: '#fde68a',
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}>
+                    <div className="shimmer-active" style={{
+                      width: '65%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #d97706 0%, #f59e0b 100%)',
+                      borderRadius: '9999px',
+                    }} />
+                  </div>
+
+                  {/* 3 Pipeline Stages Shimmer */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.25rem' }}>
+                    {[
+                      { num: '1', titulo: 'Búsqueda Semántica Vectorial', detalle: 'Embeddings E5-small sobre artículos vigentes de COIP y LOTTTSV.' },
+                      { num: '2', titulo: 'Validación Anti-Inyección', detalle: 'Filtro de seguridad contra documentos alterados y anclas viales.' },
+                      { num: '3', titulo: 'Cálculo de Sanción en SBU', detalle: 'Identificación canónica de la contravención y cálculo determinista.' },
+                    ].map((etapa) => (
+                      <div
+                        key={etapa.num}
+                        className="skeleton-bar shimmer-active"
+                        style={{
+                          borderRadius: '14px',
+                          padding: '0.85rem 1rem',
+                          background: 'rgba(255, 255, 255, 0.85)',
+                          border: '1px solid rgba(253, 230, 138, 0.7)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.25rem',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <span style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '6px',
+                            background: '#d97706',
+                            color: '#ffffff',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                            {etapa.num}
+                          </span>
+                          <strong style={{ fontSize: '0.78rem', color: '#92400e' }}>{etapa.titulo}</strong>
+                        </div>
+                        <p style={{ fontSize: '0.72rem', color: '#78350f', margin: 0, lineHeight: 1.4 }}>
+                          {etapa.detalle}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Main Response Box Skeleton */}
+                  <div className="skeleton-bar shimmer-active" style={{
+                    width: '100%',
+                    height: '84px',
+                    borderRadius: '14px',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid rgba(253, 230, 138, 0.6)',
+                  }} />
                 </div>
               )}
 
