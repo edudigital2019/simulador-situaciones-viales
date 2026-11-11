@@ -139,7 +139,7 @@ python eval/run_eval.py
 python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/
 ```
 
-La corrida final del 7 de noviembre registró `15/15` pruebas funcionales aprobadas, con p95 de 8.5 s y un primer chat de 49.8 s por calentamiento. La salida exacta está en [`docs/evidencias/semana-4/pruebas-humo.md`](docs/evidencias/semana-4/pruebas-humo.md), el catálogo en [`docs/08-pruebas.md`](docs/08-pruebas.md) y la evaluación del RAG en [`docs/07-evaluacion.md`](docs/07-evaluacion.md).
+La corrida final del 8 de noviembre registró 15/15 pruebas funcionales aprobadas, con p95 de 8.7 s y un primer chat de 41.9 s por calentamiento. La salida exacta está en [docs/evidencias/semana-4/pruebas-humo.md](docs/evidencias/semana-4/pruebas-humo.md), el catálogo en [docs/08-pruebas.md](docs/08-pruebas.md) y la evaluación del RAG en [docs/07-evaluacion.md](docs/07-evaluacion.md).
 
 ## Integración estable con el modelo
 
