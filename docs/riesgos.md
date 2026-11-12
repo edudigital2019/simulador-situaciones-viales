@@ -10,11 +10,12 @@
 
 **Riesgo:** Solicitudes repetidas pueden consumir la cuota del proveedor.
 
-**Mitigación:** La entrada de `/chat` está limitada a 500 caracteres y la salida tiene un máximo configurable. Tanto `/chat` como `/escenarios` cuentan con limitador de tasa en memoria (HTTP 429 con cabecera `Retry-After`). La tasa se limita combinando la dirección IP y el identificador de sesión. Como limitación conocida de arquitectura sin base Redis externa, las peticiones se controlan en la memoria de cada instancia activa.
+**Mitigación:** La entrada de /chat está limitada a 500 caracteres y la salida tiene un máximo configurable. /chat y /escenarios cuentan con limitador de tasa en memoria (HTTP 429 con cabecera Retry-After).
+Limitación conocida: El limitador asigna baldes por la clave compuesta ip:uuid (o identificador de sesión). Por diseño en esta versión académica, rotar el encabezado X-Session-ID genera un balde nuevo por prueba, lo que permite ejecutar suites de pruebas automatizadas concurrentes desde una misma IP sin bloquearse mutuamente. Se reconoce como limitación que un cliente malicioso podría eludir la tasa por IP rotando UUIDs. En un entorno de producción masivo, la mitigación definitiva requiere baldes agregados estrictamente por IP a nivel de API Gateway o un almacén distribuido con Redis.
 
 ## Arranque en frío
 
-**Riesgo:** Cloud Run puede apagar las instancias sin tráfico y la primera solicitud tarda más mientras carga el modelo de embeddings y el índice.
+**Riesgo:** Cloud Run apaga instancias inactivas (`min-instances=0`). El despertar del contenedor toma ~12 s (medido en `/health`), pero la primera inferencia de `/chat` toma entre 40 y 75 s adicionales mientras se cargan los pesos del modelo de embeddings multilingual-e5-small en memoria.
 
 **Mitigación:** El modelo y el índice se incluyen en la imagen. Las pruebas de humo esperan hasta 90 segundos. Como mejora futura, la interfaz puede mostrar que el servicio está iniciando o Cloud Run puede configurarse con una instancia mínima.
 

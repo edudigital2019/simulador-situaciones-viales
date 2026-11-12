@@ -39,30 +39,30 @@ Validar desde fuera del contenedor la disponibilidad, recuperación normativa, c
 La evidencia final se considera cerrada únicamente cuando los 15 casos pasan contra la URL de la revisión que recibe tráfico. Un 429 de infraestructura durante el arranque se registra como incidencia y se repite después de que `/health` esté disponible; no se modifica la expectativa funcional para ocultar el fallo.
 
 
-## Evidencia de ejecución real (8 de noviembre de 2026)
+## Evidencia de ejecución real (11 de noviembre de 2026)
 
 **Servicio:** `g8-vial` · Google Cloud Run  
 **URL probada:** `https://g8-vial-834435723683.us-central1.run.app/`  
-**Commit verificado:** `d8a1931`  
+**Commit verificado:** `29a20ad`  
 **Comando ejecutado:** `python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/`
 
 ```text
-PASA   1. [salud] GET /health -> 200 en 0.2 s
-PASA   2. [caso] POST /chat -> 200 en 41.9 s
-PASA   3. [caso] POST /chat -> 200 en 1.2 s
-PASA   4. [fuera] POST /chat -> 200 en 0.6 s
-PASA   5. [inyeccion] POST /chat -> 200 en 1.1 s
-PASA   6. [invalida] POST /chat -> 422 en 0.1 s
+PASA   1. [salud] GET /health -> 200 en 0.5 s
+PASA   2. [caso] POST /chat -> 200 en 76.7 s
+PASA   3. [caso] POST /chat -> 200 en 1.5 s
+PASA   4. [fuera] POST /chat -> 200 en 1.6 s
+PASA   5. [inyeccion] POST /chat -> 200 en 1.6 s
+PASA   6. [invalida] POST /chat -> 422 en 0.2 s
 PASA   7. [caso] POST /chat -> 200 en 1.5 s
-PASA   8. [caso] POST /chat -> 200 en 0.9 s
-PASA   9. [caso] POST /chat -> 200 en 5.3 s
-PASA  10. [alcance] POST /chat -> 200 en 8.7 s
-PASA  11. [disputa] POST /chat -> 200 en 1.2 s
-PASA  12. [invalida] POST /chat -> 422 en 0.1 s
-PASA  13. [invalida] POST /chat -> 422 en 0.1 s
-PASA  14. [invalida] POST /chat -> 422 en 0.1 s
-PASA  15. [invalida] POST /chat -> 422 en 0.1 s
-RESULTADO: 15/15 pasan · p95 8.7 s · más lento 41.9 s
+PASA   8. [caso] POST /chat -> 200 en 2.2 s
+PASA   9. [caso] POST /chat -> 200 en 28.0 s
+PASA  10. [alcance] POST /chat -> 200 en 5.9 s
+PASA  11. [disputa] POST /chat -> 200 en 7.6 s
+PASA  12. [invalida] POST /chat -> 422 en 0.3 s
+PASA  13. [invalida] POST /chat -> 422 en 0.3 s
+PASA  14. [invalida] POST /chat -> 422 en 0.2 s
+PASA  15. [invalida] POST /chat -> 422 en 0.3 s
+RESULTADO: 15/15 pasan · p95 28.0 s · más lento 76.7 s
 ```
 
 

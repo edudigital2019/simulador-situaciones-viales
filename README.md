@@ -17,7 +17,7 @@ Vía Segura ayuda a conductores, peatones y estudiantes a comprender situaciones
 - Plataforma: Google Cloud Run
 - Servicio: `g8-vial`
 - Región: `us-central1`
-- Arranque en frío medido durante el taller: 12 s
+- Arranque en frío medido durante el taller: 12 s (despertar del contenedor y respuesta de /health) | Primer chat con carga de embeddings en memoria: ~41-76 s
 
 ## Arquitectura
 
@@ -139,7 +139,7 @@ python eval/run_eval.py
 python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/
 ```
 
-La corrida final del 8 de noviembre registró 15/15 pruebas funcionales aprobadas, con p95 de 8.7 s y un primer chat de 41.9 s por calentamiento. La salida exacta está en [docs/evidencias/semana-4/pruebas-humo.md](docs/evidencias/semana-4/pruebas-humo.md), el catálogo en [docs/08-pruebas.md](docs/08-pruebas.md) y la evaluación del RAG en [docs/07-evaluacion.md](docs/07-evaluacion.md).
+La corrida final del 11 de noviembre sobre el commit `29a20ad` registró 15/15 pruebas funcionales aprobadas contra Cloud Run, con p95 de 28.0 s y un primer chat de 76.7 s por arranque en frío e inicialización de embeddings en memoria. La salida exacta está en [docs/evidencias/semana-4/pruebas-humo.md](docs/evidencias/semana-4/pruebas-humo.md) y el catálogo en [docs/08-pruebas.md](docs/08-pruebas.md).
 
 ## Integración estable con el modelo
 
