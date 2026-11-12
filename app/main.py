@@ -170,8 +170,13 @@ async def _manejar_validacion(_: Request, e: RequestValidationError):
 def clave_sesion(request: Request) -> str:
     ip = request.client.host if request.client else "desconocida"
     sid = request.headers.get("X-Session-ID", "").strip().lower()
-    # Combina IP con sesion para evitar que rotar el UUID burle el rate limit
     return f"{ip}:{sid}" if UUID_RE.match(sid) else f"ip:{ip}"
+
+
+def clave_limite_tasa(request: Request) -> str:
+    """Agrupa todas las sesiones de una misma IP en un único balde."""
+    ip = request.client.host if request.client else "desconocida"
+    return f"ip:{ip}"
 
 
 @app.get("/health")
@@ -212,6 +217,7 @@ def buscar_rag(
 def chat_normativo(
     solicitud: SolicitudChat,
     sesion: str = Depends(clave_sesion),
+    clave_tasa: str = Depends(clave_limite_tasa),
     llm: ClienteLLM = Depends(obtener_llm),
 ):
     try:
@@ -219,7 +225,7 @@ def chat_normativo(
     except ValueError as e:
         raise Problema(422, "Pregunta inválida", str(e))
 
-    espera = limitador_chat.consumir(sesion)
+    espera = limitador_chat.consumir(clave_tasa)
     if espera:
         raise Problema(
             429,
@@ -274,9 +280,13 @@ def descartar_accion_chat(id_accion: str, sesion: str = Depends(clave_sesion)):
 
 
 @app.post("/escenarios", response_model=EscenarioPublico)
-def crear_escenario(solicitud: SolicitudEscenario, sesion: str = Depends(clave_sesion),
-                    llm: ClienteLLM = Depends(obtener_llm)):
-    espera = limitador_escenarios.consumir(sesion)
+def crear_escenario(
+    solicitud: SolicitudEscenario,
+    sesion: str = Depends(clave_sesion),
+    clave_tasa: str = Depends(clave_limite_tasa),
+    llm: ClienteLLM = Depends(obtener_llm),
+):
+    espera = limitador_escenarios.consumir(clave_tasa)
     if espera:
         raise Problema(
             429,

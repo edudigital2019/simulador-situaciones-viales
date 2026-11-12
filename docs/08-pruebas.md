@@ -6,7 +6,7 @@
 
 ## Objetivo
 
-Validar desde fuera del contenedor la disponibilidad, recuperación normativa, cálculo y citas, abstención, defensa ante inyección, alcance controlado y validación de entradas. Cada caso utiliza un `X-Session-ID` distinto para que la batería no confunda una prueba funcional con el límite de tasa por sesión.
+Validar desde fuera del contenedor la disponibilidad, recuperación normativa, cálculo y citas, abstención, defensa ante inyección, alcance controlado y validación de entradas. Cada caso utiliza un `X-Session-ID` distinto para aislar su estado de sesión; el límite de tasa se aplica de forma independiente mediante un único balde por IP.
 
 ## Casos automatizados (15)
 
@@ -43,7 +43,10 @@ La evidencia final se considera cerrada únicamente cuando los 15 casos pasan co
 
 **Servicio:** `g8-vial` · Google Cloud Run  
 **URL probada:** `https://g8-vial-834435723683.us-central1.run.app/`  
-**Commit verificado:** `29a20ad`  
+**Commit de la salida registrada:** `29a20ad`
+
+**Versión final desplegada y validada por CI/CD:** `cf8a1cf` ([corrida 43142178716](https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/43142178716))
+
 **Comando ejecutado:** `python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/`
 
 ```text

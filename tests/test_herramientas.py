@@ -216,12 +216,20 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
         def __init__(self):
             self.llamadas = 0
             self.segunda_observo_tool = False
+            self.final_observo_todas = False
 
         def llamar_con_herramientas(self, mensajes, tools, tool_choice="auto"):
             self.llamadas += 1
             ejecutadas = [m["name"] for m in mensajes if m["role"] == "tool"]
             if self.llamadas == 2:
                 self.segunda_observo_tool = "buscar_normativa_rag" in ejecutadas
+            if self.llamadas == 3:
+                self.final_observo_todas = {
+                    "buscar_normativa_rag",
+                    "identificar_contravencion_coip",
+                    "calcular_sancion",
+                    "verificar_cita_y_seguridad",
+                }.issubset(ejecutadas)
             if "buscar_normativa_rag" not in ejecutadas:
                 tc = SimpleNamespace(
                     id="call_mock_rag_1",
@@ -247,7 +255,10 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
                 argumentos = {"articulo": "389", "articulos_recuperados": ["389"]}
             else:
                 msg_final = SimpleNamespace(
-                    content="Respuesta sintetizada tras herramientas",
+                    content=(
+                        "Respuesta sintetizada tras observar herramientas: Art. 389, "
+                        "multa del 30% equivalente a $144.60 y 0 puntos aplicables hoy."
+                    ),
                     tool_calls=None,
                 )
                 return msg_final, "mock", "modelo-mock", 12, 1
@@ -264,11 +275,13 @@ def test_ciclo_completo_modelo_tool_calls_rol_tool_y_respuesta():
         "Me pasé un semáforo en rojo, ¿cuál es la sanción?",
         cliente_llm=mock_llm,
     )
-    assert mock_llm.llamadas == 2
+    assert mock_llm.llamadas == 3
     assert mock_llm.segunda_observo_tool is True
-    assert res["agente"]["llamadas_modelo"] == 2
+    assert mock_llm.final_observo_todas is True
+    assert res["agente"]["llamadas_modelo"] == 3
     assert res["agente"]["modo_orquestacion"] == "hibrido_iterativo"
-    assert "144.60 USD" in res["respuesta"]
+    assert res["agente"]["origen_sintesis_final"] == "modelo_tras_herramientas"
+    assert res["respuesta"].startswith("Respuesta sintetizada tras observar herramientas")
     mensajes_traza = res["agente"]["mensajes"]
     assert any(m["role"] == "assistant" and m.get("tool_calls") for m in mensajes_traza)
     msgs_tool = [m for m in mensajes_traza if m["role"] == "tool"]
@@ -327,6 +340,8 @@ def test_agente_completa_argumentos_rag_invalidos_con_la_pregunta_original():
     assert res["tipo"] in {"con_fuente", "silencio"}
     assert res["respuesta"]
     assert res["citas"] == ["COIP, Art. 389"]
+    assert res["agente"]["origen_sintesis_final"] == "plantilla_respaldo"
+    assert "144.60 USD" in res["respuesta"]
     assert any(
         m.get("role") == "tool" and m.get("name") == "buscar_normativa_rag"
         for m in res["agente"]["mensajes"]

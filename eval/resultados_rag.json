@@ -1,5 +1,11 @@
 {
   "banco": "preguntas.json",
+  "proveniencia": {
+    "evaluador": "scripts/evaluar_rag.py",
+    "banco_sha256": "cd7e063f4290de9083103039e99bbd1700938299fde97434c4f7be8b9a1f00e2",
+    "modelo_embeddings": "intfloat/multilingual-e5-small",
+    "umbral_distancia_coseno": 0.45
+  },
   "total_preguntas": 20,
   "preguntas_con_fuente": 16,
   "preguntas_abstencion": 4,

@@ -64,6 +64,9 @@ def test_evaluacion_20_preguntas_hit_at_5_y_silencio():
     assert res["hit_at_5"] == 1.0
     assert res["hit_at_1"] >= 0.80
     assert res["precision_silencio"] == 1.0
+    assert res["proveniencia"]["modelo_embeddings"] == MODELO_EMBEDDINGS
+    assert res["proveniencia"]["umbral_distancia_coseno"] == 0.45
+    assert len(res["proveniencia"]["banco_sha256"]) == 64
 
 
 def test_evaluacion_banco_independiente_preguntas_finales():
@@ -73,6 +76,8 @@ def test_evaluacion_banco_independiente_preguntas_finales():
     assert res_fin["hit_at_5"] >= 0.90
     assert res_fin["hit_at_1"] >= 0.80
     assert res_fin["precision_silencio"] == 1.0
+    assert res_fin["proveniencia"]["modelo_embeddings"] == MODELO_EMBEDDINGS
+    assert len(res_fin["proveniencia"]["banco_sha256"]) == 64
 
 
 def test_regla_de_silencio_ante_consulta_fuera_de_alcance_o_administrativa():
@@ -104,6 +109,8 @@ def test_defensa_documento_envenenado_revision_3():
             pregunta="¿Cuál es la sanción por cruzar el semáforo en rojo según el Art. 389?",
             incluir_documento_envenenado_demo=True,
         ),
+        sesion="sesion-rag-envenenado",
+        clave_tasa="ip:127.0.0.1",
         llm=None,
     )
     assert resp["documento_envenenado"] is True
@@ -127,6 +134,8 @@ def test_endpoint_chat_y_rag_buscar():
 
     chat = chat_normativo(
         SolicitudChat(pregunta="Me pasé un semáforo en rojo, ¿cuánto es la multa?"),
+        sesion="sesion-rag-endpoint",
+        clave_tasa="ip:127.0.0.1",
         llm=None,
     )
     assert chat["abstencion"] is False
@@ -148,6 +157,8 @@ def test_endpoint_chat_entrega_el_cliente_al_agente(monkeypatch):
 
     respuesta = chat_normativo(
         SolicitudChat(pregunta="¿Qué indica el COIP sobre el semáforo en rojo?"),
+        sesion="sesion-rag-cliente",
+        clave_tasa="ip:127.0.0.1",
         llm=cliente,
     )
 

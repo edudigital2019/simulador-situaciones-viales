@@ -1,12 +1,19 @@
 # Evidencia de pruebas funcionales
 
 **Fecha:** 11 de noviembre de 2026  
-**Commit probado:** `29a20ad` (`fix: corrrecciones en frontend, docs y RAG`)  
+**Commit de la salida registrada:** `29a20ad` (`fix: corrrecciones en frontend, docs y RAG`)
+
+**Versión final desplegada:** `cf8a1cf` (cambios posteriores únicamente de documentación)
+
+**Corrida CI/CD final:** https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/43142178716
+
+**Resultado de la corrida final:** despliegue y etapa `Ejecutar pruebas de humo` completados correctamente
+
 **Servicio:** `g8-vial`  
 **Plataforma:** Google Cloud Run  
 **URL probada:** `https://g8-vial-834435723683.us-central1.run.app/`
 
-La batería ampliada se ejecutó contra la URL pública actual tras el despliegue del commit 29a20ad. Cada caso de chat utilizó un `X-Session-ID` diferente para verificar la función correspondiente sin consumir artificialmente el balde de otra prueba.
+La salida detallada siguiente se registró contra la URL pública tras desplegar `29a20ad`. Después, la versión documental final `cf8a1cf` se desplegó sobre la misma aplicación y volvió a superar la etapa automatizada de pruebas de humo. Cada caso de chat utilizó un `X-Session-ID` diferente para aislar su estado funcional. En la corrección posterior, el limitador dejó de usar ese UUID y pasó a compartir un único balde por IP.
 
 ```text
 PASA   1. [salud] GET /health -> 200 en 0.5 s

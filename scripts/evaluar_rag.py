@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -7,7 +8,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
 
-from app.services.rag import recuperar  # noqa: E402
+from app.services.rag import MODELO_EMBEDDINGS, UMBRAL_DISTANCIA_COSENO, recuperar  # noqa: E402
 
 RUTA_PREGUNTAS = RAIZ / "eval" / "preguntas.json"
 RUTA_PREGUNTAS_FINALES = RAIZ / "eval" / "preguntas_finales.json"
@@ -61,6 +62,12 @@ def evaluar(
 
     resumen = {
         "banco": ruta_preguntas.name,
+        "proveniencia": {
+            "evaluador": "scripts/evaluar_rag.py",
+            "banco_sha256": hashlib.sha256(ruta_preguntas.read_bytes()).hexdigest(),
+            "modelo_embeddings": MODELO_EMBEDDINGS,
+            "umbral_distancia_coseno": UMBRAL_DISTANCIA_COSENO,
+        },
         "total_preguntas": len(preguntas),
         "preguntas_con_fuente": len(con_respuesta),
         "preguntas_abstencion": len(sin_respuesta),

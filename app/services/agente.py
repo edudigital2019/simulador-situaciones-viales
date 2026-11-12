@@ -24,7 +24,8 @@ from app.tools.contravenciones import cargar_tabla
 from app.tools.progreso import ajustar_dificultad, registrar_progreso
 
 TOPE_VUELTAS = 6
-MAX_LLAMADAS_MODELO_POR_CONSULTA = 2
+MAX_LLAMADAS_MODELO_POR_CONSULTA = 3
+MAX_LLAMADAS_PLANIFICACION = MAX_LLAMADAS_MODELO_POR_CONSULTA - 1
 UMBRAL_CONFIANZA_AUTOMATICA = 0.80
 
 SYSTEM_PROMPT_AGENTE = (
@@ -376,6 +377,60 @@ def _sintetizar_respuesta_final(pregunta: str, ctx: dict[str, Any]) -> str:
     return f"Según el {cita_oficial}: «{extracto}»"
 
 
+def _respuesta_modelo_conserva_hechos(texto: str, ctx: dict[str, Any]) -> bool:
+    """Impide aceptar una síntesis que omita o cambie los hechos verificados."""
+    if not texto or not texto.strip():
+        return False
+
+    rag_res = ctx.get("rag") or {}
+    fragmentos = rag_res.get("fragmentos") or []
+    sancion = ctx.get("sancion_calculada")
+    articulo = _numero_articulo_sancion(sancion)
+    if articulo is None and fragmentos:
+        articulo = str(fragmentos[0].get("articulo") or "")
+    if articulo and not re.search(rf"\bArt(?:\.|ículo)?\s*{re.escape(articulo)}\b", texto, re.I):
+        return False
+
+    if sancion:
+        hechos_numericos = (
+            f"{sancion['porcentaje_sbu']:g}",
+            f"{sancion['multa_usd']:.2f}",
+            f"{sancion['puntos_aplicables_hoy']:g}",
+        )
+        if any(valor not in texto for valor in hechos_numericos):
+            return False
+    return True
+
+
+def _sintetizar_respuesta_final_con_modelo(
+    pregunta: str,
+    mensajes: list[dict[str, Any]],
+    ctx: dict[str, Any],
+    cliente_llm: Any,
+) -> str | None:
+    """Pide al modelo redactar después de observar tools; devuelve None si no es segura."""
+    rag_res = ctx.get("rag") or {}
+    if rag_res.get("abstencion") or es_consulta_disputa(pregunta):
+        return None
+
+    borrador_seguro = _sintetizar_respuesta_final(pregunta, ctx)
+    instruccion = {
+        "role": "user",
+        "content": (
+            "Redacta ahora la respuesta final para el usuario después de observar todos los resultados con rol tool. "
+            "Sé claro y educativo. Conserva literalmente el artículo, porcentajes, valores monetarios y puntos del "
+            "siguiente borrador verificado; no agregues normas, cifras ni hechos nuevos. Borrador verificado:\n"
+            f"{borrador_seguro}"
+        ),
+    }
+    try:
+        msg, _, _, _, _ = cliente_llm.llamar_con_herramientas([*mensajes, instruccion], [])
+    except Exception:
+        return None
+    texto = str(getattr(msg, "content", "") or "").strip()
+    return texto if _respuesta_modelo_conserva_hechos(texto, ctx) else None
+
+
 def _numero_articulo_sancion(sancion: dict[str, Any] | None) -> str | None:
     if not sancion:
         return None
@@ -620,11 +675,12 @@ def ejecutar_agente_consulta(
         }
 
     respuesta_final_modelo: str | None = None
+    origen_sintesis_final = "plantilla_respaldo"
 
     while vueltas < TOPE_VUELTAS:
         cliente_para_paso = (
             cliente_llm
-            if cliente_llm is not None and llamadas_modelo < MAX_LLAMADAS_MODELO_POR_CONSULTA
+            if cliente_llm is not None and llamadas_modelo < MAX_LLAMADAS_PLANIFICACION
             else None
         )
         if cliente_para_paso is not None:
@@ -637,12 +693,10 @@ def ejecutar_agente_consulta(
                 msg_modelo = paso_obligatorio
             else:
                 respuesta_final_modelo = _sintetizar_respuesta_final(pregunta, ctx)
-                mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
                 break
 
         if not msg_modelo.tool_calls:
             respuesta_final_modelo = _sintetizar_respuesta_final(pregunta, ctx)
-            mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
             break
 
         mensajes.append({
@@ -769,9 +823,30 @@ def ejecutar_agente_consulta(
             if vueltas >= TOPE_VUELTAS:
                 break
 
-    if respuesta_final_modelo is None:
+    herramientas_exitosas = {
+        mensaje.get("name")
+        for mensaje in mensajes
+        if mensaje.get("role") == "tool" and '"ok": false' not in str(mensaje.get("content", "")).lower()
+    }
+    if (
+        cliente_llm is not None
+        and "verificar_cita_y_seguridad" in herramientas_exitosas
+        and llamadas_modelo < MAX_LLAMADAS_MODELO_POR_CONSULTA
+    ):
+        llamadas_modelo += 1
+        sintesis_modelo = _sintetizar_respuesta_final_con_modelo(
+            pregunta,
+            mensajes,
+            ctx,
+            cliente_llm,
+        )
+        if sintesis_modelo is not None:
+            respuesta_final_modelo = sintesis_modelo
+            origen_sintesis_final = "modelo_tras_herramientas"
+
+    if respuesta_final_modelo is None or origen_sintesis_final == "plantilla_respaldo":
         respuesta_final_modelo = _sintetizar_respuesta_final(pregunta, ctx)
-        mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
+    mensajes.append({"role": "assistant", "content": respuesta_final_modelo})
 
     rag_res = ctx.get("rag") or {
         "abstencion": True,
@@ -879,6 +954,7 @@ def ejecutar_agente_consulta(
             "tope_vueltas": TOPE_VUELTAS,
             "llamadas_modelo": llamadas_modelo,
             "max_llamadas_modelo": MAX_LLAMADAS_MODELO_POR_CONSULTA,
+            "origen_sintesis_final": origen_sintesis_final,
             "modo_orquestacion": "hibrido_iterativo",
             "herramientas_permitidas": HERRAMIENTAS_PERMITIDAS,
             "herramientas_fuera_de_alcance": list(HERRAMIENTAS_FUERA_DE_ALCANCE.keys()),

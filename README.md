@@ -109,7 +109,7 @@ gcloud run deploy g8-vial \
 
 El despliegue habitual lo realiza `.github/workflows/ci-cd.yml` después de que las pruebas terminan correctamente. La publicación automática desde `master` se habilita con la variable de GitHub `HABILITAR_DESPLIEGUE=true`.
 
-- Corrida verde registrada por el taller: https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/42325256229
+- Corrida CI/CD final (commit `cf8a1cf`, despliegue y pruebas de humo): https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/43142178716
 - Decisión de despliegue: [`docs/adr/ADR-0003-despliegue.md`](docs/adr/ADR-0003-despliegue.md)
 
 ## Datos en producción
@@ -129,7 +129,7 @@ Se acepta perder los escenarios temporales porque el proyecto es una demostraci�
 ## Pruebas y evaluación
 
 ```bash
-# 79 casos de prueba (66 funciones pytest parametrizadas) con proveedor simulado
+# 81 casos de prueba (68 funciones pytest parametrizadas) con proveedor simulado
 python -m pytest -q
 
 # Evaluación del RAG
@@ -139,7 +139,7 @@ python eval/run_eval.py
 python tests/smoke.py https://g8-vial-834435723683.us-central1.run.app/
 ```
 
-La corrida final del 11 de noviembre sobre el commit `29a20ad` registró 15/15 pruebas funcionales aprobadas contra Cloud Run, con p95 de 28.0 s y un primer chat de 76.7 s por arranque en frío e inicialización de embeddings en memoria. La salida exacta está en [docs/evidencias/semana-4/pruebas-humo.md](docs/evidencias/semana-4/pruebas-humo.md) y el catálogo en [docs/08-pruebas.md](docs/08-pruebas.md).
+La salida registrada el 11 de noviembre sobre el commit funcional `29a20ad` obtuvo 15/15 pruebas aprobadas contra Cloud Run, con p95 de 28.0 s y un primer chat de 76.7 s por arranque en frío e inicialización de embeddings en memoria. La versión final `cf8a1cf`, que solo actualiza documentación, también completó correctamente el despliegue y la etapa `Ejecutar pruebas de humo` en la [corrida CI/CD 43142178716](https://github.com/edudigital2019/simulador-situaciones-viales/actions/runs/43142178716). La salida registrada está en [docs/evidencias/semana-4/pruebas-humo.md](docs/evidencias/semana-4/pruebas-humo.md) y el catálogo en [docs/08-pruebas.md](docs/08-pruebas.md).
 
 ## Integración estable con el modelo
 

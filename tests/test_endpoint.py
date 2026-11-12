@@ -1,12 +1,15 @@
 import json as _json
 
 import pytest
+from starlette.requests import Request
 
 from app.main import (
     Problema,
     _problema,
     app,
     chat_normativo,
+    clave_limite_tasa,
+    clave_sesion,
     confirmar_accion_chat,
     crear_escenario,
     descartar_accion_chat,
@@ -56,7 +59,9 @@ class ClienteDirecto:
         sesion = (headers or {}).get("X-Session-ID", "ip:127.0.0.1").lower()
         try:
             if ruta == "/escenarios":
-                res = crear_escenario(SolicitudEscenario(**json), sesion=sesion, llm=self.llm)
+                res = crear_escenario(
+                    SolicitudEscenario(**json), sesion=sesion, clave_tasa=f"ip:test:{sesion}", llm=self.llm
+                )
                 return _RespSimple(200, res.model_dump())
             if ruta == "/evaluaciones":
                 res = evaluar(SolicitudEvaluacion(**json), sesion=sesion)
@@ -223,10 +228,40 @@ def test_siguiente_escenario_aplica_dificultad_sugerida_por_progreso():
     assert datos["dificultad_aplicada_por_progreso"] is True
 
 
+def _request(ip: str, sesion: str) -> Request:
+    return Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/",
+            "headers": [(b"x-session-id", sesion.encode("ascii"))],
+            "client": (ip, 12345),
+        }
+    )
+
+
+def test_limite_tasa_usa_solo_ip_aunque_cambie_uuid():
+    ip = "203.0.113.10"
+    primera = _request(ip, "11111111-1111-1111-1111-111111111111")
+    segunda = _request(ip, "22222222-2222-2222-2222-222222222222")
+
+    assert clave_sesion(primera) != clave_sesion(segunda)
+    assert clave_limite_tasa(primera) == "ip:203.0.113.10"
+    assert clave_limite_tasa(segunda) == "ip:203.0.113.10"
+
+
+def test_limite_tasa_separa_direcciones_ip():
+    sesion = "11111111-1111-1111-1111-111111111111"
+
+    assert clave_limite_tasa(_request("203.0.113.10", sesion)) != clave_limite_tasa(
+        _request("203.0.113.11", sesion)
+    )
+
+
 def test_chat_aplica_limite_de_tasa_y_retry_after(monkeypatch):
     class LimitadorAgotado:
         def consumir(self, clave):
-            assert clave == "sesion-chat-prueba"
+            assert clave == "ip:203.0.113.10"
             return 12.0
 
     monkeypatch.setattr("app.main.limitador_chat", LimitadorAgotado())
@@ -235,6 +270,7 @@ def test_chat_aplica_limite_de_tasa_y_retry_after(monkeypatch):
         chat_normativo(
             SolicitudChat(pregunta="¿Qué sanción aplica por cruzar el semáforo en rojo?"),
             sesion="sesion-chat-prueba",
+            clave_tasa="ip:203.0.113.10",
             llm=object(),
         )
 
@@ -257,7 +293,12 @@ def test_confirmacion_humana_no_ejecuta_antes_de_aprobar_y_es_idempotente(monkey
     monkeypatch.setattr("app.main.ejecutar_agente_consulta", lambda *args, **kwargs: _respuesta_chat_con_sancion())
 
     antes = progreso(sesion=sesion)
-    respuesta = chat_normativo(SolicitudChat(pregunta="¿Cuál es la sanción?"), sesion=sesion, llm=object())
+    respuesta = chat_normativo(
+        SolicitudChat(pregunta="¿Cuál es la sanción?"),
+        sesion=sesion,
+        clave_tasa="ip:127.0.0.1",
+        llm=object(),
+    )
     accion = respuesta["accion_pendiente"]
 
     assert accion["estado"] == "pendiente"
@@ -275,7 +316,12 @@ def test_confirmacion_humana_no_ejecuta_antes_de_aprobar_y_es_idempotente(monkey
 def test_descartar_accion_no_modifica_progreso_y_aisla_sesiones(monkeypatch):
     sesion = "confirmacion-real-test-02"
     monkeypatch.setattr("app.main.ejecutar_agente_consulta", lambda *args, **kwargs: _respuesta_chat_con_sancion())
-    respuesta = chat_normativo(SolicitudChat(pregunta="¿Cuál es la sanción?"), sesion=sesion, llm=object())
+    respuesta = chat_normativo(
+        SolicitudChat(pregunta="¿Cuál es la sanción?"),
+        sesion=sesion,
+        clave_tasa="ip:127.0.0.1",
+        llm=object(),
+    )
     accion_id = respuesta["accion_pendiente"]["id_accion"]
 
     with pytest.raises(Problema) as ajena:

@@ -5,7 +5,7 @@
 **Decisión:** distribuir los 641 fragmentos y sus vectores dentro de la imagen Docker.  
 **Alternativa descartada:** Pinecone, Cloud SQL u otra base vectorial externa.  
 **Razón:** el corpus es pequeño, versionado y de solo lectura; incluirlo reduce dependencias de red y costos fijos.  
-**Costo aceptado:** imagen mayor y arranque en frío aproximado de 12 segundos.
+**Costo aceptado:** imagen mayor. El despertar del contenedor hasta `/health` toma aproximadamente 12 segundos; la primera consulta de `/chat` puede tardar entre 41 y 77 segundos por la carga inicial de embeddings.
 
 ## 2. La pregunta original controla la recuperación
 
@@ -32,7 +32,7 @@
 
 ## 6. Límite de tasa por operación
 
-**Decisión:** usar baldes independientes para `/chat` y `/escenarios`, identificados por UUID de sesión o IP.  
+**Decisión:** usar baldes independientes para `/chat` y `/escenarios`, identificados únicamente por dirección IP. El UUID continúa aislando el estado funcional de cada sesión, pero no modifica la clave del limitador.
 **Razón:** evita que una ráfaga agote cuota del LLM y evita que generar escenarios bloquee consultas normativas legítimas.  
 **Limitación:** el estado vive en memoria y no se comparte entre múltiples instancias; una producción horizontal requeriría Redis u otro almacén distribuido.
 
@@ -77,7 +77,7 @@ La IA apoyó borradores, pruebas, documentación e interfaz. No se aceptaron res
 
 ## 14. Bucle híbrido iterativo del agente
 
-**Decisión:** permitir como máximo dos llamadas al modelo por consulta normativa. En la segunda, el modelo recibe y observa el mensaje de resultado `tool` generado en la primera vuelta antes de decidir el siguiente paso.  
+**Decisión:** permitir como máximo tres llamadas al modelo por consulta normativa. Las dos primeras se reservan para planificación y selección de herramientas; la tercera sintetiza la respuesta después de observar la traza completa de resultados `tool`. La síntesis solo se acepta si conserva las citas y cifras verificadas; de lo contrario, se utiliza una plantilla determinista como respaldo.
 **Cierre controlado:** si el modelo responde antes de ejecutar las herramientas obligatorias, el planificador Python completa recuperación, identificación, cálculo y verificación. El límite total permanece en seis acciones.  
 **Razón:** elimina el comportamiento de una única intervención del modelo y demuestra observación iterativa, sin elevar cada consulta a cinco o seis llamadas ni delegar al modelo el cálculo o la validación jurídica.  
 **Trazabilidad:** la API devuelve `llamadas_modelo`, `max_llamadas_modelo`, `modo_orquestacion`, mensajes con roles `assistant/tool` y la bitácora de herramientas.

@@ -10,8 +10,7 @@
 
 **Riesgo:** Solicitudes repetidas pueden consumir la cuota del proveedor.
 
-**Mitigación:** La entrada de /chat está limitada a 500 caracteres y la salida tiene un máximo configurable. /chat y /escenarios cuentan con limitador de tasa en memoria (HTTP 429 con cabecera Retry-After).
-Limitación conocida: El limitador asigna baldes por la clave compuesta ip:uuid (o identificador de sesión). Por diseño en esta versión académica, rotar el encabezado X-Session-ID genera un balde nuevo por prueba, lo que permite ejecutar suites de pruebas automatizadas concurrentes desde una misma IP sin bloquearse mutuamente. Se reconoce como limitación que un cliente malicioso podría eludir la tasa por IP rotando UUIDs. En un entorno de producción masivo, la mitigación definitiva requiere baldes agregados estrictamente por IP a nivel de API Gateway o un almacén distribuido con Redis.
+**Mitigación:** La entrada de `/chat` está limitada a 500 caracteres y la salida tiene un máximo configurable. `/chat` y `/escenarios` cuentan con limitadores de tasa en memoria (HTTP 429 con cabecera `Retry-After`) que asignan un único balde por dirección IP, independientemente del encabezado `X-Session-ID`. Rotar el UUID ya no crea un balde nuevo. Como limitación conocida de la arquitectura sin Redis, los baldes viven en la memoria de cada instancia y no se comparten entre múltiples instancias.
 
 ## Arranque en frío
 
